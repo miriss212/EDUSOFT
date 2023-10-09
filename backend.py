@@ -15,10 +15,11 @@ class GameArea: # herna plocha (stvorcova siet policok)
         self.x_size = x_size
         self.y_size = y_size
         self.player_position = player_position
+        self.get_field_by_position(player_position[0], player_position[1]).is_visited = True
 
     def is_valid_move(self, to_x, to_y) -> bool:
         to_field = self.get_field_by_position(to_x, to_y)
-        if (to_field is None): # mimo hracej plochy
+        if to_field is None: # mimo hracej plochy
             return False
         elif (to_field.has_object or to_field.is_visited): # na policku je objekt alebo je uz navstiveny
             return False
@@ -58,9 +59,9 @@ class HamiltonianPathSolver:
         valid_neighbours = []
         valid_moves = [(1, 0), (-1, 0), (0, 1), (0, -1)] # hore, dole, doprava, dolava
         for d_x, d_y in valid_moves:
-            neighbour = self.game_area.get_field_by_position(field_coordinates[0] + d_x, field_coordinates[1] + d_y)
-            if neighbour is not None and not neighbour.has_object:
-                valid_neighbours.append(self.get_field_coordinates(neighbour)) # pridavame suradnice policka
+            neighbour_coordinates = (field_coordinates[0] + d_x, field_coordinates[1] + d_y)
+            if self.game_area.is_valid_move(neighbour_coordinates[0], neighbour_coordinates[1]): # ak je sused validny
+                valid_neighbours.append(neighbour_coordinates) # pridavame suradnice policka
         return valid_neighbours
 
     def get_field_coordinates(self, field: Field) -> tuple: # (x, y)
