@@ -32,7 +32,7 @@ root.title("Canvas and Buttons Example")
 exp = False  # Initialize the mode as False (Test mode)
 
 # Open and convert the image to a suitable format
-image = Image.open("C:/Users/cidom/OneDrive/Dokumenty/mAIN2/edusoft/sand.jpg")
+image = Image.open("sand.jpg")
 tk_image = ImageTk.PhotoImage(image)
 
 # Create a canvas widget
