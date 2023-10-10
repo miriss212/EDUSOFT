@@ -68,9 +68,9 @@ class HamiltonianPathSolver:
         return (field.x_position, field.y_position)
 
     def get_game_area_size(self) -> int:
-        game_area_size = 0 # policka bez objektov
+        game_area_size = 0 # validne policka, pozor policko na ktorom je hrac navstivene este nie je!
         for field in self.game_area.fields:
-            if not field.has_object:
+            if self.game_area.is_valid_move(field.x_position, field.y_position):
                 game_area_size += 1
         return game_area_size
 
