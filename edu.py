@@ -6,9 +6,10 @@ from PIL import Image, ImageTk
 class MapEditor:
     def __init__(self, root):
         self.root = root
-        self.root.title("Map Editor")
+        self.root.title("Jedným ťahom")
 
         self.mode = "normal"  # Initial mode is normal
+        
 
         # Open a JPEG image and convert it to PhotoImage
         self.background_image = self.load_and_resize_image("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\edusoft\\sand.jpg", 400, 400)
@@ -74,13 +75,11 @@ class MapEditor:
 
     def create_size_slider(self):
         self.size_label = tk.Label(self.buttons_frame, text="Set Size:", bg="sandybrown")
-        self.size_slider = ttk.Scale(self.buttons_frame, from_=100, to=500, orient="horizontal", length=300, style='Horizontal.TScale')
-        #self.size_slider = ttk.Scale(self.buttons_frame, from_=100, to=500, orient="horizontal", length=300, style='TSlider')
+        self.size_slider = tk.Scale(self.buttons_frame, from_=100, to=500, orient="horizontal", length=200, bg='#ffc299', highlightbackground='#ff6600')
         self.size_slider.set(400)
         self.size_label.grid(row=1, column=1, padx=5, pady=5)
         self.size_slider.grid(row=1, column=2, padx=5, pady=5)
         self.submit_resize_button = tk.Button(self.buttons_frame, text="Submit Resize", command=self.submit_resize, bg='sandybrown')
-        self.submit_resize_button.grid(row=1, column=3, padx=5, pady=5)
 
     def submit_resize(self):
         new_size = self.size_slider.get()
