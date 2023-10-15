@@ -15,7 +15,7 @@ class GameArea: # herna plocha (stvorcova siet policok)
         self.x_size = x_size
         self.y_size = y_size
         self.player_position = player_position
-        self.get_field_by_position(player_position[0], player_position[1]).is_visited = True
+        # self.get_field_by_position(player_position[0], player_position[1]).is_visited = True
 
     def is_valid_move(self, to_x, to_y) -> bool:
         to_field = self.get_field_by_position(to_x, to_y)
@@ -31,6 +31,20 @@ class GameArea: # herna plocha (stvorcova siet policok)
             if (field.x_position == x_position and field.y_position == y_position):
                 return field
         return None
+    
+    def check_win(self) -> bool:
+        player_field = self.get_field_by_position(self.player_position[0], self.player_position[1])
+        for field in self.fields:
+            if not field.is_visited and field != player_field: # ak neni navstivene a zaroven na nom neni hrac
+                return False
+        return True
+    
+    def move_player(self, direction: str):
+        valid_moves = {"up" : (1, 0), "down": (-1, 0), "left": (0, 1), "right": (0, -1)}
+        new_player_position = (self.player_position[0] + valid_moves[direction][0], self.player_position[1] + valid_moves[direction][1])
+        if self.is_valid_move(new_player_position[0], new_player_position[1]):
+            self.get_field_by_position(self.player_position[0], self.player_position[1]).is_visited = True # oznac policko ako navstivene
+            self.player_position = new_player_position
 
 class HamiltonianPathSolver:
 
@@ -87,10 +101,35 @@ class GameAreaManager:
                 fields.append(Field(False, x, y))
         self.game_area = GameArea(fields, x_size, y_size, player_position)
 
-    def create_game_area_from_file(self, file_name: str) -> None:
+    def create_game_area_from_file(self, file_name: str) -> None: # "-" je prazdne policko, "o" je objekt, "p" je hrac
+        fields = []
+        player_position = (0, 0) # defaultna hodnota
+        with open(file_name, 'r') as file:
+            lines = file.readlines()
+            for y, line in enumerate(lines):
+                for x, symbol in enumerate(line.strip()):
+                    has_object = symbol == "o"
+                    fields.append(Field(has_object, x, y))
+                    if (symbol == "p"):
+                        player_position = (x, y)
+        y_size = len(lines)
+        x_size = len(lines[0].strip())
+        self.game_area = GameArea(fields, x_size, y_size, player_position)
+
+class GameAreaRenderer:
+
+    def __init__(self) -> None:
+        pass
+
+    def render_game_area(self):
+        pass
+
+    def show_hamiltonian_path(self):
         pass
 
 manager = GameAreaManager()
 manager.create_empty_game_area(3, 3)
 manager.game_area.get_field_by_position(1, 1).has_object = True
+print(HamiltonianPathSolver(manager.game_area).get_hamiltonian_path())
+manager.create_game_area_from_file("map1.txt")
 print(HamiltonianPathSolver(manager.game_area).get_hamiltonian_path())
