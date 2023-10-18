@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 import tkinter.font as tkFont
+import os
+import backend
 
 class MapEditor:
     def __init__(self, root):
@@ -16,6 +18,7 @@ class MapEditor:
         self.canvas = tk.Canvas(root, width=400, height=400)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)  # Set the image as the background
         self.canvas.grid(row=1, column=0, columnspan=4)
+        self.game_area_manager = backend.GameAreaManager(self.canvas)
 
         custom_font = tkFont.Font(family="Lucida Sans Unicode", size=16, weight="bold", slant="italic")
         self.mode_label = tk.Label(root, text="Mode: " + self.mode, bg="sandybrown", font=custom_font)
@@ -118,6 +121,7 @@ class MapEditor:
         self.canvas.config(width=width, height=height)
         self.background_image = self.load_and_resize_image("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\edusoft\\sand.jpg", width, height)
         self.canvas.itemconfig(1, image=self.background_image)
+    
 
     def save_map(self):
         # Add code to save the map in experimental mode
@@ -125,6 +129,11 @@ class MapEditor:
 
     def open_map(self):
         # Add code to open a saved map in normal mode
+        file_path = filedialog.askopenfilename(initialdir=os.path.dirname(os.path.abspath(__file__)))
+        if file_path:
+        # Do something with the selected file (e.g., print its path)
+            print("Selected file:", file_path)
+
         pass
 
     def reset_map(self):
@@ -141,6 +150,7 @@ class MapEditor:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    
     app = MapEditor(root)
     root.mainloop()
     
