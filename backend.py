@@ -144,16 +144,22 @@ class GameAreaRenderer:
         self.CRATE_IMAGE = ImageTk.PhotoImage(Image.open("crate.png"))  # Store the image as an attribute
 
     def render_game_area(self):
+        self.canvas.delete("all")
         FIELD_SIZE = 44
-        #CRATE_IMAGE = ImageTk.PhotoImage(Image.open("crate.png"))
-        #SOKOBAN_IMAGE = ImageTk.PhotoImage(Image.open("sokoban.png"))
-        self.canvas.config(width = self.game_area.x_size * FIELD_SIZE, height = self.game_area.y_size * FIELD_SIZE)
+        self.canvas.config(width = self.game_area.x_size * FIELD_SIZE + 1, height = self.game_area.y_size * FIELD_SIZE + 1)
         for field in self.game_area.fields:
-            x = field.x_position * FIELD_SIZE
-            y = field.y_position * FIELD_SIZE
-            self.canvas.create_rectangle(y, x, y + FIELD_SIZE, x + FIELD_SIZE, outline = "black")
+            y = field.x_position * FIELD_SIZE + 3
+            x = field.y_position * FIELD_SIZE + 3
+            if field.is_visited:
+                color = "green"
+            else:
+                color = "yellow"
+            self.canvas.create_rectangle(y, x, y + FIELD_SIZE, x + FIELD_SIZE, outline = "black", fill = color)
             if field.has_object:
                 self.canvas.create_image(y, x, anchor = tk.NW, image = self.CRATE_IMAGE)
+        self.canvas.create_image(self.game_area.player_position[1] * FIELD_SIZE + FIELD_SIZE / 2 + 3, \
+                                 self.game_area.player_position[0] * FIELD_SIZE + FIELD_SIZE / 2 + 3, \
+                                    anchor = tk.CENTER, image = self.SOKOBAN_IMAGE)
 
     def show_hamiltonian_path(self):
         pass
