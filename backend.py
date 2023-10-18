@@ -94,15 +94,18 @@ class GameAreaManager:
 
     def __init__(self, canvas) -> None:
         self.game_area = None
-        self.game_area_renderer = GameAreaRenderer(canvas)
+        self.game_area_renderer = None
+        self.canvas = canvas
 
     def create_empty_game_area(self, x_size: int, y_size: int) -> None:
+
         fields = []
         player_position = (0 ,0) # (x, y)
         for y in range(y_size):
             for x in range(x_size):
                 fields.append(Field(False, x, y))
         self.game_area = GameArea(fields, x_size, y_size, player_position)
+        self.game_area_renderer = GameAreaRenderer(self.canvas, self.game_area)
 
     def create_game_area_from_file(self, file_name: str) -> None: # "-" je prazdne policko, "o" je objekt, "p" je hrac
         fields = []
@@ -117,7 +120,9 @@ class GameAreaManager:
                         player_position = (x, y)
         y_size = len(lines)
         x_size = len(lines[0].strip())
+
         self.game_area = GameArea(fields, x_size, y_size, player_position)
+        self.game_area_renderer = GameAreaRenderer(self.canvas, self.game_area)
 
     def save_game_area_to_file(self, file_name: str):
         fields = [["-" for x in range(self.game_area.x_size)] for y in range(self.game_area.y_size)] # dvojrozmerne pole prazdnych policok
@@ -141,17 +146,16 @@ class GameAreaRenderer:
         for field in self.game_area.fields:
             x = field.x_position * FIELD_SIZE
             y = field.y_position * FIELD_SIZE
-            self.canvas.create_rectange(y, x, y + FIELD_SIZE, x + FIELD_SIZE, outline = "black")
+            self.canvas.create_rectangle(y, x, y + FIELD_SIZE, x + FIELD_SIZE, outline = "black")
 
     def show_hamiltonian_path(self):
         pass
 
-manager = GameAreaManager()
-manager.create_empty_game_area(3, 3)
-manager.game_area.get_field_by_position(1, 1).has_object = True
-print(HamiltonianPathSolver(manager.game_area).get_hamiltonian_path())
-manager.create_game_area_from_file("map1.txt")
-print(HamiltonianPathSolver(manager.game_area).get_hamiltonian_path())
+#manager = GameAreaManager()
+#manager.create_empty_game_area(3, 3)
+#manager.game_area.get_field_by_position(1, 1).has_object = True
+#print(HamiltonianPathSolver(manager.game_area).get_hamiltonian_path())
+#print(HamiltonianPathSolver(manager.game_area).get_hamiltonian_path())
  
 # Get the current directory of the active script
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -163,6 +167,6 @@ txt_files = [f for f in os.listdir(current_directory) if f.endswith('.txt')]
 for txt_file in txt_files:
     print(txt_file)
 
-manager.create_empty_game_area(5, 2)
-manager.game_area.get_field_by_position(0, 1).has_object = True
-manager.save_game_area_to_file("map_test.txt")
+#manager.create_empty_game_area(5, 2)
+#manager.game_area.get_field_by_position(0, 1).has_object = True
+#manager.save_game_area_to_file("map_test.txt")

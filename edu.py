@@ -133,6 +133,8 @@ class MapEditor:
         if file_path:
         # Do something with the selected file (e.g., print its path)
             print("Selected file:", file_path)
+            self.game_area_manager.create_game_area_from_file(file_path)
+            self.game_area_manager.game_area_renderer.render_game_area()
 
         pass
 
@@ -150,7 +152,6 @@ class MapEditor:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    
     app = MapEditor(root)
     root.mainloop()
     
