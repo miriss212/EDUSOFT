@@ -140,18 +140,20 @@ class GameAreaRenderer:
     def __init__(self, canvas, game_area: GameArea) -> None:
         self.canvas = canvas
         self.game_area = game_area
+        self.SOKOBAN_IMAGE = ImageTk.PhotoImage(Image.open("sokoban.png"))  # Store the image as an attribute
+        self.CRATE_IMAGE = ImageTk.PhotoImage(Image.open("crate.png"))  # Store the image as an attribute
 
     def render_game_area(self):
         FIELD_SIZE = 44
-        CRATE_IMAGE = ImageTk.PhotoImage(Image.open("crate.png"))
-        SOKOBAN_IMAGE = ImageTk.PhotoImage(Image.open("sokoban.png"))
+        #CRATE_IMAGE = ImageTk.PhotoImage(Image.open("crate.png"))
+        #SOKOBAN_IMAGE = ImageTk.PhotoImage(Image.open("sokoban.png"))
         self.canvas.config(width = self.game_area.x_size * FIELD_SIZE, height = self.game_area.y_size * FIELD_SIZE)
         for field in self.game_area.fields:
             x = field.x_position * FIELD_SIZE
             y = field.y_position * FIELD_SIZE
             self.canvas.create_rectangle(y, x, y + FIELD_SIZE, x + FIELD_SIZE, outline = "black")
             if field.has_object:
-                self.canvas.create_image(y, x, anchor = tk.NW, image = CRATE_IMAGE)
+                self.canvas.create_image(y, x, anchor = tk.NW, image = self.CRATE_IMAGE)
 
     def show_hamiltonian_path(self):
         pass
