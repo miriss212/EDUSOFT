@@ -1,6 +1,7 @@
 import copy
 import os
 import tkinter as tk
+from PIL import Image, ImageTk
 
 class Field: # policko
 
@@ -142,11 +143,15 @@ class GameAreaRenderer:
 
     def render_game_area(self):
         FIELD_SIZE = 44
+        CRATE_IMAGE = ImageTk.PhotoImage(Image.open("crate.png"))
+        SOKOBAN_IMAGE = ImageTk.PhotoImage(Image.open("sokoban.png"))
         self.canvas.config(width = self.game_area.x_size * FIELD_SIZE, height = self.game_area.y_size * FIELD_SIZE)
         for field in self.game_area.fields:
             x = field.x_position * FIELD_SIZE
             y = field.y_position * FIELD_SIZE
             self.canvas.create_rectangle(y, x, y + FIELD_SIZE, x + FIELD_SIZE, outline = "black")
+            if field.has_object:
+                self.canvas.create_image(y, x, anchor = tk.NW, image = CRATE_IMAGE)
 
     def show_hamiltonian_path(self):
         pass
