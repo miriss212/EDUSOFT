@@ -18,7 +18,10 @@ class MapEditor:
         self.canvas = tk.Canvas(root, width=400, height=400)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)  # Set the image as the background
         self.canvas.grid(row=1, column=0, columnspan=4)
+
         self.game_area_manager = backend.GameAreaManager(self.canvas)
+        self.canvas.bind("<KeyPress>", self.on_key_press)
+        self.canvas.focus_set() 
 
         custom_font = tkFont.Font(family="Lucida Sans Unicode", size=16, weight="bold", slant="italic")
         self.mode_label = tk.Label(root, text="Mode: " + self.mode, bg="sandybrown", font=custom_font)
@@ -69,6 +72,9 @@ class MapEditor:
         self.create_size_slider()
 
         self.set_button_states()  # Set initial button states
+
+    def on_key_press(self, event):
+        self.game_area_manager.on_key_press(event) 
 
     def load_and_resize_image(self, path, width, height):
         original_image = Image.open(path)
@@ -135,8 +141,6 @@ class MapEditor:
             print("Selected file:", file_path)
             self.game_area_manager.create_game_area_from_file(file_path)
             self.game_area_manager.game_area_renderer.render_game_area()
-
-        pass
 
     def reset_map(self):
         # Add code to reset the map

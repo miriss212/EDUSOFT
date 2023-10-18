@@ -43,11 +43,12 @@ class GameArea: # herna plocha (stvorcova siet policok)
         return True
     
     def move_player(self, direction: str):
-        valid_moves = {"up" : (1, 0), "down": (-1, 0), "left": (0, 1), "right": (0, -1)}
+        valid_moves = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
         new_player_position = (self.player_position[0] + valid_moves[direction][0], self.player_position[1] + valid_moves[direction][1])
         if self.is_valid_move(new_player_position[0], new_player_position[1]):
             self.get_field_by_position(self.player_position[0], self.player_position[1]).is_visited = True # oznac policko ako navstivene
             self.player_position = new_player_position
+            #self.game_area_renderer.update_game_area() 
 
 class HamiltonianPathSolver:
 
@@ -97,7 +98,7 @@ class GameAreaManager:
         self.game_area = None
         self.game_area_renderer = None
         self.canvas = canvas
-
+        
     def create_empty_game_area(self, x_size: int, y_size: int) -> None:
 
         fields = []
@@ -135,6 +136,22 @@ class GameAreaManager:
             for line in fields:
                 file.write("".join(map(str, line)) + "\n")
 
+    def move_player(self, direction):
+        #if self.game_area.is_valid_move(direction):
+        self.game_area.move_player(direction)
+        self.game_area_renderer.update_game_area()  # Call the rendering update method
+
+    def on_key_press(self, event):
+        if event.keysym == "Up":
+            self.move_player("up")
+        elif event.keysym == "Down":
+            self.move_player("down")
+        elif event.keysym == "Left":
+            self.move_player("left")
+        elif event.keysym == "Right":
+            self.move_player("right")
+
+
 class GameAreaRenderer:
 
     def __init__(self, canvas, game_area: GameArea) -> None:
@@ -163,6 +180,10 @@ class GameAreaRenderer:
 
     def show_hamiltonian_path(self):
         pass
+
+    def update_game_area(self):
+        self.render_game_area()
+
 
 #manager = GameAreaManager()
 #manager.create_empty_game_area(3, 3)
