@@ -140,6 +140,7 @@ class MapEditor:
         # Do something with the selected file (e.g., print its path)
             print("Selected file:", file_path)
             self.game_area_manager.create_game_area_from_file(file_path)
+            self.canvas.delete("all")
             self.game_area_manager.game_area_renderer.render_game_area()
 
     def reset_map(self):

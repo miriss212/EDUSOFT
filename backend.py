@@ -37,13 +37,17 @@ class GameArea: # herna plocha (stvorcova siet policok)
     
     def check_win(self) -> bool:
         player_field = self.get_field_by_position(self.player_position[0], self.player_position[1])
-        for field in self.fields:
-            if not field.is_visited and field != player_field: # ak neni navstivene a zaroven na nom neni hrac
+        #print(player_field)
+        valid_fields = [field for field in self.fields if not field.has_object]
+        for field in valid_fields:
+            #print(field == player_field)
+            if (not field.is_visited) and field != player_field: # ak neni navstivene a zaroven na nom neni hrac
                 return False
         return True
     
     def move_player(self, direction: str):
-        valid_moves = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
+        #valid_moves = {"up": (-1, 0), "down": (1, 0), "left": (0, -1), "right": (0, 1)}
+        valid_moves = {"up": (0, -1), "down": (0, 1), "left": (-1, 0), "right": (1, 0)}
         new_player_position = (self.player_position[0] + valid_moves[direction][0], self.player_position[1] + valid_moves[direction][1])
         if self.is_valid_move(new_player_position[0], new_player_position[1]):
             self.get_field_by_position(self.player_position[0], self.player_position[1]).is_visited = True # oznac policko ako navstivene
@@ -75,7 +79,8 @@ class HamiltonianPathSolver:
 
     def get_valid_neighbours(self, field_coordinates: tuple) -> list: # vracia suradnice policok
         valid_neighbours = []
-        valid_moves = [(0, 1), (0, -1), (1, 0), (-1, 0)] # hore, dole, doprava, dolava
+        valid_moves = [(0, -1), (0, 1), (-1, 0), (1, 0)] # hore, dole, doprava, dolava
+       
         for d_x, d_y in valid_moves:
             neighbour_coordinates = (field_coordinates[0] + d_x, field_coordinates[1] + d_y)
             if self.game_area.is_valid_move(neighbour_coordinates[0], neighbour_coordinates[1]): # ak je sused validny
@@ -98,6 +103,7 @@ class GameAreaManager:
         self.game_area = None
         self.game_area_renderer = None
         self.canvas = canvas
+        
         
     def create_empty_game_area(self, x_size: int, y_size: int) -> None:
 
@@ -137,9 +143,9 @@ class GameAreaManager:
                 file.write("".join(map(str, line)) + "\n")
 
     def move_player(self, direction):
-        #if self.game_area.is_valid_move(direction):
         self.game_area.move_player(direction)
         self.game_area_renderer.update_game_area()  # Call the rendering update method
+        print(self.game_area.check_win())
 
     def on_key_press(self, event):
         if event.keysym == "Up":
@@ -159,23 +165,22 @@ class GameAreaRenderer:
         self.game_area = game_area
         self.SOKOBAN_IMAGE = ImageTk.PhotoImage(Image.open("sokoban.png"))  # Store the image as an attribute
         self.CRATE_IMAGE = ImageTk.PhotoImage(Image.open("crate.png"))  # Store the image as an attribute
+        self.FIELD_SIZE = 44
 
     def render_game_area(self):
-        self.canvas.delete("all")
-        FIELD_SIZE = 44
-        self.canvas.config(width = self.game_area.x_size * FIELD_SIZE + 1, height = self.game_area.y_size * FIELD_SIZE + 1)
+        self.canvas.config(width = self.game_area.x_size * self.FIELD_SIZE + 1, height = self.game_area.y_size * self.FIELD_SIZE + 1)
         for field in self.game_area.fields:
-            y = field.x_position * FIELD_SIZE + 3
-            x = field.y_position * FIELD_SIZE + 3
+            x = field.x_position * self.FIELD_SIZE + 3
+            y = field.y_position * self.FIELD_SIZE + 3
             if field.is_visited:
                 color = "green"
             else:
                 color = "yellow"
-            self.canvas.create_rectangle(y, x, y + FIELD_SIZE, x + FIELD_SIZE, outline = "black", fill = color)
+            self.canvas.create_rectangle(x, y, x + self.FIELD_SIZE, y + self.FIELD_SIZE, outline = "black", fill = color)
             if field.has_object:
-                self.canvas.create_image(y, x, anchor = tk.NW, image = self.CRATE_IMAGE)
-        self.canvas.create_image(self.game_area.player_position[1] * FIELD_SIZE + FIELD_SIZE / 2 + 3, \
-                                 self.game_area.player_position[0] * FIELD_SIZE + FIELD_SIZE / 2 + 3, \
+                self.canvas.create_image(x, y, anchor = tk.NW, image = self.CRATE_IMAGE)
+        self.canvas.create_image(self.game_area.player_position[0] * self.FIELD_SIZE + self.FIELD_SIZE / 2 + 3, \
+                                 self.game_area.player_position[1] * self.FIELD_SIZE + self.FIELD_SIZE / 2 + 3, \
                                     anchor = tk.CENTER, image = self.SOKOBAN_IMAGE)
 
     def show_hamiltonian_path(self):
