@@ -91,7 +91,7 @@ class MapEditor:
             self.save_button.grid_forget()
             self.open_button.grid(row=0, column=1)
             self.reset_button.grid(row=0, column=2)
-            self.try_button.grid_forget()
+            self.try_button.grid(row=0, column=3)
             self.size_x_label.grid_forget()
             self.size_y_label.grid_forget()
             self.size_x_slider.grid_forget()
