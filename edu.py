@@ -96,6 +96,8 @@ class MapEditor:
             self.size_slider.grid_forget()
             self.submit_resize_button.grid_forget()
             self.no_solution_button.grid(row=0, column=4, padx=5, pady=5)
+            self.canvas.unbind("<Button-1>")
+            self.canvas.unbind("<Button-3>")
         else:
             self.save_button.grid(row=0, column=1)
             self.open_button.grid_forget()
@@ -105,6 +107,20 @@ class MapEditor:
             self.size_slider.grid(row=1, column=2, padx=5, pady=5)
             self.submit_resize_button.grid(row=1, column=3, padx=5, pady=5)
             self.no_solution_button.grid_forget()
+            self.canvas.bind("<Button-1>", self.manage_left_click)
+            self.canvas.bind("<Button-3>", self.manage_right_click)
+
+    def manage_left_click(self, event):
+        self.game_area_manager.add_object_to_game_area(event)
+        self.canvas.delete("all")
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
+        self.game_area_manager.game_area_renderer.render_game_area()
+
+    def manage_right_click(self, event):
+        self.game_area_manager.add_player_to_game_area(event)
+        self.canvas.delete("all")
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
+        self.game_area_manager.game_area_renderer.render_game_area()
 
     def create_size_slider(self):
         self.size_label = tk.Label(self.buttons_frame, text="Set Size:", bg="sandybrown")
@@ -135,12 +151,23 @@ class MapEditor:
 
     def open_map(self):
         # Add code to open a saved map in normal mode
-        file_path = filedialog.askopenfilename(initialdir=os.path.dirname(os.path.abspath(__file__)))
-        if file_path:
+        # file_path = filedialog.askopenfilename(initialdir=os.path.dirname(os.path.abspath(__file__)))
+        # file_path = filedialog.askopenfilename(initialdir=".", title="Select a Text File", filetypes=(("Text Files", "*.txt"), ("All Files", "*.*")))
+ 
+        # Configure options for the dialog
+        options = {
+            'defaultextension': '.txt',  # Default file extension
+            'filetypes': [("Text Files", "*.txt")]  # List of file types
+        }
+ 
+        # Open a file dialog with the configured options
+        file_path = filedialog.askopenfilename(**options)
+        if file_path: # bolo by dobre dat do priecinka mapky
         # Do something with the selected file (e.g., print its path)
             print("Selected file:", file_path)
             self.game_area_manager.create_game_area_from_file(file_path)
             self.canvas.delete("all")
+            self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
             self.game_area_manager.game_area_renderer.render_game_area()
 
     def reset_map(self):

@@ -37,10 +37,8 @@ class GameArea: # herna plocha (stvorcova siet policok)
     
     def check_win(self) -> bool:
         player_field = self.get_field_by_position(self.player_position[0], self.player_position[1])
-        #print(player_field)
         valid_fields = [field for field in self.fields if not field.has_object]
         for field in valid_fields:
-            #print(field == player_field)
             if (not field.is_visited) and field != player_field: # ak neni navstivene a zaroven na nom neni hrac
                 return False
         return True
@@ -157,6 +155,19 @@ class GameAreaManager:
         elif event.keysym == "Right":
             self.move_player("right")
 
+    def add_object_to_game_area(self, event):
+        field_x_position = event.x // 44 - 1
+        field_y_position = event.y // 44 - 1
+        field = self.game_area.get_field_by_position(field_x_position, field_y_position)
+        if field.has_object:
+            field.has_object = False
+        else:
+            field.has_object = True
+
+    def add_player_to_game_area(self, event):
+        field_x_position = event.x // 44 - 1
+        field_y_position = event.y // 44 - 1
+        self.game_area.player_position = (field_x_position, field_y_position)
 
 class GameAreaRenderer:
 
@@ -168,19 +179,20 @@ class GameAreaRenderer:
         self.FIELD_SIZE = 44
 
     def render_game_area(self):
-        self.canvas.config(width = self.game_area.x_size * self.FIELD_SIZE + 1, height = self.game_area.y_size * self.FIELD_SIZE + 1)
         for field in self.game_area.fields:
-            x = field.x_position * self.FIELD_SIZE + 3
-            y = field.y_position * self.FIELD_SIZE + 3
+            x = (field.x_position + 1) * self.FIELD_SIZE
+            y = (field.y_position + 1) * self.FIELD_SIZE
             if field.is_visited:
-                color = "green"
+                r = 62; g = 63; b = 71
+                color = f'#{r:02x}{g:02x}{b:02x}'
             else:
-                color = "yellow"
+                r = 246; g = 223; b = 186
+                color = f'#{r:02x}{g:02x}{b:02x}'
             self.canvas.create_rectangle(x, y, x + self.FIELD_SIZE, y + self.FIELD_SIZE, outline = "black", fill = color)
             if field.has_object:
                 self.canvas.create_image(x, y, anchor = tk.NW, image = self.CRATE_IMAGE)
-        self.canvas.create_image(self.game_area.player_position[0] * self.FIELD_SIZE + self.FIELD_SIZE / 2 + 3, \
-                                 self.game_area.player_position[1] * self.FIELD_SIZE + self.FIELD_SIZE / 2 + 3, \
+        self.canvas.create_image((self.game_area.player_position[0] + 1) * self.FIELD_SIZE + self.FIELD_SIZE / 2, \
+                                 (self.game_area.player_position[1] + 1) * self.FIELD_SIZE + self.FIELD_SIZE / 2, \
                                     anchor = tk.CENTER, image = self.SOKOBAN_IMAGE)
 
     def show_hamiltonian_path(self):
