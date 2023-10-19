@@ -13,9 +13,9 @@ class MapEditor:
         self.mode = "normal"  # Initial mode is normal
         
         # Open a JPEG image and convert it to PhotoImage
-        self.background_image = self.load_and_resize_image("sand.jpg", 400, 400)
+        self.background_image = self.load_and_resize_image("room.png", 44*10, 44*10)
 
-        self.canvas = tk.Canvas(root, width=400, height=400)
+        self.canvas = tk.Canvas(root, width=44*10, height=44*10)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)  # Set the image as the background
         self.canvas.grid(row=1, column=0, columnspan=4)
 
