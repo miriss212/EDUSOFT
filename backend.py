@@ -196,8 +196,16 @@ class GameAreaRenderer:
                                  (self.game_area.player_position[1] + 1) * self.FIELD_SIZE + self.FIELD_SIZE / 2, \
                                     anchor = tk.CENTER, image = self.SOKOBAN_IMAGE)
 
-    def show_hamiltonian_path(self):
-        pass
+    def show_hamiltonian_path(self, hamiltonian_path: list):
+        # zacina od hraca
+        from_x = (self.game_area.player_position[0] + 1) * self.FIELD_SIZE + self.FIELD_SIZE / 2
+        from_y = (self.game_area.player_position[1] + 1) * self.FIELD_SIZE + self.FIELD_SIZE / 2
+        for field_coordinates in hamiltonian_path:
+            to_x = (field_coordinates[0] + 1) * self.FIELD_SIZE + self.FIELD_SIZE / 2
+            to_y = (field_coordinates[1] + 1) * self.FIELD_SIZE + self.FIELD_SIZE / 2
+            self.canvas.create_line(from_x, from_y, to_x, to_y, fill = "red", width = 5)
+            from_x = to_x
+            from_y = to_y
 
     def update_game_area(self):
         self.render_game_area()

@@ -217,7 +217,9 @@ class MapEditor:
 
     def try_map(self):
         # Add code to try the map in experimental mode
-        pass
+        solver = backend.HamiltonianPathSolver(self.game_area_manager.game_area)
+        hamiltonian_path = solver.get_hamiltonian_path()
+        self.game_area_manager.game_area_renderer.show_hamiltonian_path(hamiltonian_path)
 
     def no_solution(self):
         # Add code for "No Solution" button in normal mode
