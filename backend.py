@@ -131,6 +131,7 @@ class GameAreaManager:
         self.game_area_renderer = GameAreaRenderer(self.canvas, self.game_area)
 
     def save_game_area_to_file(self, file_name: str):
+        
         fields = [["-" for x in range(self.game_area.x_size)] for y in range(self.game_area.y_size)] # dvojrozmerne pole prazdnych policok
         for field in self.game_area.fields:
             if field.has_object:

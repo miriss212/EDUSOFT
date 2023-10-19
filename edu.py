@@ -13,9 +13,9 @@ class MapEditor:
         self.mode = "normal"  # Initial mode is normal
         
         # Open a JPEG image and convert it to PhotoImage
-        self.background_image = self.load_and_resize_image("room.png", 44*10, 44*10)
+        self.background_image = self.load_and_resize_image("room.png", 44*12, 44*10)
 
-        self.canvas = tk.Canvas(root, width=44*10, height=44*10)
+        self.canvas = tk.Canvas(root, width=44*12, height=44*10)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)  # Set the image as the background
         self.canvas.grid(row=1, column=0, columnspan=4)
 
@@ -69,7 +69,7 @@ class MapEditor:
         self.try_button.grid(row=0, column=4, padx=5, pady=5)
         self.no_solution_button.grid(row=0, column=5, padx=5, pady=5)
 
-        self.create_size_slider()
+        self.create_size_sliders()
 
         self.set_button_states()  # Set initial button states
 
@@ -92,23 +92,30 @@ class MapEditor:
             self.open_button.grid(row=0, column=1)
             self.reset_button.grid(row=0, column=2)
             self.try_button.grid_forget()
-            self.size_label.grid_forget()
-            self.size_slider.grid_forget()
+            self.size_x_label.grid_forget()
+            self.size_y_label.grid_forget()
+            self.size_x_slider.grid_forget()
+            self.size_y_slider.grid_forget()
             self.submit_resize_button.grid_forget()
             self.no_solution_button.grid(row=0, column=4, padx=5, pady=5)
             self.canvas.unbind("<Button-1>")
             self.canvas.unbind("<Button-3>")
+            self.canvas.bind("<KeyPress>", self.on_key_press)
         else:
             self.save_button.grid(row=0, column=1)
             self.open_button.grid_forget()
             self.reset_button.grid(row=0, column=2)
             self.try_button.grid(row=0, column=3)
-            self.size_label.grid(row=1, column=1, padx=5, pady=5)
-            self.size_slider.grid(row=1, column=2, padx=5, pady=5)
+            self.size_x_label.grid(row=1, column=1, padx=5, pady=5)
+            self.size_x_slider.grid(row=1, column=2, padx=5, pady=5)
+            self.size_y_label.grid(row=2, column=1, padx=5, pady=5)
+            self.size_y_slider.grid(row=2, column=2, padx=5, pady=5)
             self.submit_resize_button.grid(row=1, column=3, padx=5, pady=5)
             self.no_solution_button.grid_forget()
             self.canvas.bind("<Button-1>", self.manage_left_click)
             self.canvas.bind("<Button-3>", self.manage_right_click)
+            self.canvas.unbind("<KeyPress>")
+            
 
     def manage_left_click(self, event):
         self.game_area_manager.add_object_to_game_area(event)
@@ -122,12 +129,18 @@ class MapEditor:
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
         self.game_area_manager.game_area_renderer.render_game_area()
 
-    def create_size_slider(self):
-        self.size_label = tk.Label(self.buttons_frame, text="Set Size:", bg="sandybrown")
-        self.size_slider = tk.Scale(self.buttons_frame, from_=100, to=500, orient="horizontal", length=200, bg='#ffc299', highlightbackground='#ff6600')
-        self.size_slider.set(400)
-        self.size_label.grid(row=1, column=1, padx=5, pady=5)
-        self.size_slider.grid(row=1, column=2, padx=5, pady=5)
+    def create_size_sliders(self):
+        self.size_x_label = tk.Label(self.buttons_frame, text="Set X Size:", bg="sandybrown")
+        self.size_x_slider = tk.Scale(self.buttons_frame, from_= 2, to= 10, orient="horizontal", length=200, bg='#ffc299', highlightbackground='#ff6600')
+        self.size_x_slider.set(5)
+        self.size_x_label.grid(row=1, column=1, padx=5, pady=5)
+        self.size_x_slider.grid(row=1, column=2, padx=5, pady=5)
+
+        self.size_y_label = tk.Label(self.buttons_frame, text="Set Y Size:", bg="sandybrown")
+        self.size_y_slider = tk.Scale(self.buttons_frame, from_= 2, to= 8, orient="horizontal", length=200, bg='#ffc299', highlightbackground='#ff6600')
+        self.size_y_slider.set(5)
+        self.size_y_label.grid(row=2, column=1, padx=5, pady=5)
+        self.size_y_slider.grid(row=2, column=2, padx=5, pady=5)
 
         img2 = Image.open("submit.png")
         img2 = img2.resize((30, 30), Image.NEAREST)
@@ -136,8 +149,12 @@ class MapEditor:
         self.submit_resize_button.image = photo2
 
     def submit_resize(self):
-        new_size = self.size_slider.get()
-        self.resize_canvas(new_size, new_size)
+        new_size_x = self.size_x_slider.get()
+        new_size_y = self.size_y_slider.get()
+        self.canvas.delete("all")
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
+        self.game_area_manager.create_empty_game_area(new_size_x, new_size_y)
+        self.game_area_manager.game_area_renderer.render_game_area()
 
     def resize_canvas(self, width, height):
         self.canvas.config(width=width, height=height)
@@ -146,8 +163,21 @@ class MapEditor:
     
 
     def save_map(self):
-        # Add code to save the map in experimental mode
-        pass
+        # Define the file type for .txt files
+        filetypes = [
+            ("Text Files", "*.txt")
+        ]
+
+        # Configure options for the dialog
+        options = {
+            'defaultextension': '.txt',  # Default file extension
+            'filetypes': filetypes  # List of file types
+        }
+
+        # Open a file dialog to get the save file path
+        self.file_path = filedialog.asksaveasfilename(**options)
+        self.game_area_manager.save_game_area_to_file(self.file_path)
+        print(self.file_path)
 
     def open_map(self):
         # Add code to open a saved map in normal mode
@@ -161,18 +191,29 @@ class MapEditor:
         }
  
         # Open a file dialog with the configured options
-        file_path = filedialog.askopenfilename(**options)
-        if file_path: # bolo by dobre dat do priecinka mapky
+        self.file_path = filedialog.askopenfilename(**options)
+        if self.file_path: # bolo by dobre dat do priecinka mapky
         # Do something with the selected file (e.g., print its path)
-            print("Selected file:", file_path)
-            self.game_area_manager.create_game_area_from_file(file_path)
+            print("Selected file:", self.file_path)
+            self.game_area_manager.create_game_area_from_file(self.file_path)
             self.canvas.delete("all")
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
             self.game_area_manager.game_area_renderer.render_game_area()
 
     def reset_map(self):
-        # Add code to reset the map
-        pass
+
+        if self.mode == "experimental":  
+            self.game_area_manager.create_empty_game_area(self.size_x_slider.get(),self.size_y_slider.get())
+            self.canvas.delete("all")
+            self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
+            self.game_area_manager.game_area_renderer.render_game_area()
+        else :
+            print(self.file_path)
+            self.game_area_manager.create_game_area_from_file(self.file_path)
+            self.canvas.delete("all")
+            self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
+            self.game_area_manager.game_area_renderer.render_game_area()
+        
 
     def try_map(self):
         # Add code to try the map in experimental mode
