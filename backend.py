@@ -141,20 +141,24 @@ class GameAreaManager:
             for line in fields:
                 file.write("".join(map(str, line)) + "\n")
 
-    def move_player(self, direction):
+    def move_player(self, direction): 
         self.game_area.move_player(direction)
         self.game_area_renderer.update_game_area()  # Call the rendering update method
         print(self.game_area.check_win())
 
-    def on_key_press(self, event):
+    def on_key_press(self, event): # vrati True/False
+        win = False
+
         if event.keysym == "Up":
-            self.move_player("up")
+            win = self.move_player("up")
         elif event.keysym == "Down":
-            self.move_player("down")
+            win = self.move_player("down")
         elif event.keysym == "Left":
-            self.move_player("left")
+            win = self.move_player("left")
         elif event.keysym == "Right":
-            self.move_player("right")
+            win = self.move_player("right")
+
+        return win
 
     def add_object_to_game_area(self, event):
         field_x_position = event.x // 44 - 1
@@ -218,14 +222,14 @@ class GameAreaRenderer:
 #print(HamiltonianPathSolver(manager.game_area).get_hamiltonian_path())
  
 # Get the current directory of the active script
-current_directory = os.path.dirname(os.path.abspath(__file__))
+# current_directory = os.path.dirname(os.path.abspath(__file__))
  
 # List only .txt files in the current directory
-txt_files = [f for f in os.listdir(current_directory) if f.endswith('.txt')]
+# txt_files = [f for f in os.listdir(current_directory) if f.endswith('.txt')]
  
 # Print the list of .txt files
-for txt_file in txt_files:
-    print(txt_file)
+# for txt_file in txt_files:
+#    print(txt_file)
 
 #manager.create_empty_game_area(5, 2)
 #manager.game_area.get_field_by_position(0, 1).has_object = True

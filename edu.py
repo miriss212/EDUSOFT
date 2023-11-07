@@ -24,8 +24,12 @@ class MapEditor:
         self.canvas.focus_set() 
 
         custom_font = tkFont.Font(family="Lucida Sans Unicode", size=16, weight="bold", slant="italic")
+        universal_font = tkFont.Font(family="Lucida Sans Unicode", size=14, weight="normal", slant="italic")
         self.mode_label = tk.Label(root, text="Mode: " + self.mode, bg="sandybrown", font=custom_font)
-        self.mode_label.grid(row=0, column=0, columnspan=4)
+        self.mode_label.grid(row=0, column=0, columnspan=2)
+        self.universal_label = tk.Label(root, text="", bg="sandybrown", font=universal_font)
+        self.universal_label.grid(row=0, column=2, columnspan=2)
+        self.universal_label.config(text="Vyber mapu ktorú chceš hrať pomocou ikonky!")
 
         self.buttons_frame = tk.Frame(root)
         self.buttons_frame.grid(row=2, column=0, columnspan=5)
@@ -74,7 +78,8 @@ class MapEditor:
         self.set_button_states()  # Set initial button states
 
     def on_key_press(self, event):
-        self.game_area_manager.on_key_press(event) 
+        if self.game_area_manager.on_key_press(event) == True:
+            self.universal_label.config(text="Výborne, vyhral si! Vyber ďalšiu mapu...")
 
     def load_and_resize_image(self, path, width, height):
         original_image = Image.open(path)
@@ -85,6 +90,11 @@ class MapEditor:
         self.mode = "experimental" if self.mode == "normal" else "normal"
         self.set_button_states()
         self.mode_label.config(text="Mode: " + self.mode)
+
+        if self.mode == "normal":
+            self.universal_label.config(text="Snaž sa! Môžeš použiť nápovedu pomocou ikonky...")
+        if self.mode == "experimental":
+            self.universal_label.config(text="Ľavým klikom pridaj krabicu, pravým hráča...")
 
     def set_button_states(self):
         if self.mode == "normal":
@@ -171,7 +181,8 @@ class MapEditor:
         # Configure options for the dialog
         options = {
             'defaultextension': '.txt',  # Default file extension
-            'filetypes': filetypes  # List of file types
+            'filetypes': filetypes,  # List of file types
+            'initialdir': 'mapky'
         }
 
         # Open a file dialog to get the save file path
@@ -187,7 +198,8 @@ class MapEditor:
         # Configure options for the dialog
         options = {
             'defaultextension': '.txt',  # Default file extension
-            'filetypes': [("Text Files", "*.txt")]  # List of file types
+            'filetypes': [("Text Files", "*.txt")],  # List of file types
+            'initialdir': 'mapky'
         }
  
         # Open a file dialog with the configured options
@@ -199,6 +211,7 @@ class MapEditor:
             self.canvas.delete("all")
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
             self.game_area_manager.game_area_renderer.render_game_area()
+            self.universal_label.config(text="Snaž sa! Môžeš použiť nápovedu pomocou ikonky...")
 
     def reset_map(self):
 
@@ -213,17 +226,26 @@ class MapEditor:
             self.canvas.delete("all")
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
             self.game_area_manager.game_area_renderer.render_game_area()
+            self.universal_label.config(text="Snaž sa! Môžeš použiť nápovedu pomocou ikonky...")
         
 
     def try_map(self):
         # Add code to try the map in experimental mode
         solver = backend.HamiltonianPathSolver(self.game_area_manager.game_area)
         hamiltonian_path = solver.get_hamiltonian_path()
-        self.game_area_manager.game_area_renderer.show_hamiltonian_path(hamiltonian_path)
+        if hamiltonian_path == []:
+            self.universal_label.config(text="Cesta už neexistuje... Daj reset!")
+        else:
+            self.game_area_manager.game_area_renderer.show_hamiltonian_path(hamiltonian_path)
 
     def no_solution(self):
         # Add code for "No Solution" button in normal mode
-        pass
+        solver = backend.HamiltonianPathSolver(self.game_area_manager.game_area)
+        hamiltonian_path = solver.get_hamiltonian_path()
+        if hamiltonian_path == []:
+            self.universal_label.config(text="Správne! Táto mapa nemá riešenie, vyber ďalšiu mapu!")
+        else:
+            self.universal_label.config(text="Táto mapa má riešenie, snaž sa ďalej!")
 
 if __name__ == "__main__":
     root = tk.Tk()
