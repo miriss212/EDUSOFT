@@ -4,6 +4,8 @@ from PIL import Image, ImageTk
 import tkinter.font as tkFont
 import os
 import backend
+import re
+
 
 class MapEditor:
     def __init__(self, root):
@@ -30,6 +32,9 @@ class MapEditor:
         self.universal_label = tk.Label(root, text="", bg="sandybrown", font=universal_font)
         self.universal_label.grid(row=2, column=0, columnspan=4)
         self.universal_label.config(text="Vyber mapu ktorú chceš hrať pomocou ikonky!")
+
+        self.map_name_label = tk.Label(root, text="", bg="sandybrown", font=universal_font)
+        self.map_name_label.grid(row=0, column=2, columnspan=2)
 
         self.buttons_frame = tk.Frame(root)
         self.buttons_frame.grid(row=3, column=0, columnspan=5)
@@ -190,11 +195,16 @@ class MapEditor:
         self.game_area_manager.save_game_area_to_file(self.file_path)
         print(self.file_path)
 
+    def extract_level_number(self, file_name):
+        pattern = r'\d+'
+        match = re.search(pattern, file_name)
+        if match:
+            return int(match.group())
+        else:
+            return None
+    
+
     def open_map(self):
-        # Add code to open a saved map in normal mode
-        # file_path = filedialog.askopenfilename(initialdir=os.path.dirname(os.path.abspath(__file__)))
-        # file_path = filedialog.askopenfilename(initialdir=".", title="Select a Text File", filetypes=(("Text Files", "*.txt"), ("All Files", "*.*")))
- 
         # Configure options for the dialog
         options = {
             'defaultextension': '.txt',  # Default file extension
@@ -202,11 +212,16 @@ class MapEditor:
             'initialdir': 'mapky'
         }
  
-        # Open a file dialog with the configured options
         self.file_path = filedialog.askopenfilename(**options)
         if self.file_path: # bolo by dobre dat do priecinka mapky
-        # Do something with the selected file (e.g., print its path)
             print("Selected file:", self.file_path)
+            file_name = os.path.basename(self.file_path)
+            level_number = self.extract_level_number(file_name)
+            if level_number is not None:
+                self.map_name_label.config(text=f"LEVEL: {level_number}")
+            else:
+                self.map_name_label.config(text="Zvoľ level!")
+            
             self.game_area_manager.create_game_area_from_file(self.file_path)
             self.canvas.delete("all")
             self.canvas.create_image(0, 0, anchor=tk.NW, image=self.background_image)
@@ -230,7 +245,6 @@ class MapEditor:
         
 
     def try_map(self):
-        # Add code to try the map in experimental mode
         solver = backend.HamiltonianPathSolver(self.game_area_manager.game_area)
         hamiltonian_path = solver.get_hamiltonian_path()
         if hamiltonian_path == []:
@@ -239,7 +253,6 @@ class MapEditor:
             self.game_area_manager.game_area_renderer.show_hamiltonian_path(hamiltonian_path)
 
     def no_solution(self):
-        # Add code for "No Solution" button in normal mode
         solver = backend.HamiltonianPathSolver(self.game_area_manager.game_area)
         hamiltonian_path = solver.get_hamiltonian_path()
         if hamiltonian_path == []:
