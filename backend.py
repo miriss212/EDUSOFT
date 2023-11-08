@@ -144,21 +144,19 @@ class GameAreaManager:
     def move_player(self, direction): 
         self.game_area.move_player(direction)
         self.game_area_renderer.update_game_area()  # Call the rendering update method
-        print(self.game_area.check_win())
 
     def on_key_press(self, event): # vrati True/False
-        win = False
 
         if event.keysym == "Up":
-            win = self.move_player("up")
+            self.move_player("up")
         elif event.keysym == "Down":
-            win = self.move_player("down")
+            self.move_player("down")
         elif event.keysym == "Left":
-            win = self.move_player("left")
+            self.move_player("left")
         elif event.keysym == "Right":
-            win = self.move_player("right")
+            self.move_player("right")
 
-        return win
+        return self.game_area.check_win()
 
     def add_object_to_game_area(self, event):
         field_x_position = event.x // 44 - 1
