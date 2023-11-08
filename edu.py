@@ -28,11 +28,11 @@ class MapEditor:
         self.mode_label = tk.Label(root, text="Mode: " + self.mode, bg="sandybrown", font=custom_font)
         self.mode_label.grid(row=0, column=0, columnspan=2)
         self.universal_label = tk.Label(root, text="", bg="sandybrown", font=universal_font)
-        self.universal_label.grid(row=0, column=2, columnspan=2)
+        self.universal_label.grid(row=2, column=0, columnspan=4)
         self.universal_label.config(text="Vyber mapu ktorú chceš hrať pomocou ikonky!")
 
         self.buttons_frame = tk.Frame(root)
-        self.buttons_frame.grid(row=2, column=0, columnspan=5)
+        self.buttons_frame.grid(row=3, column=0, columnspan=5)
 
         self.switch_button = tk.Button(self.buttons_frame, text="Switch Mode", command=self.toggle_mode, bg='sandybrown')
         self.switch_button.grid(row=0, column=0, padx=5, pady=5)
