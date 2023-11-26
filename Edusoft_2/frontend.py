@@ -100,15 +100,18 @@ class GameManager:
         self.game: backend.Game = None
 
         self.commands: list[Command] = []
+        # TODO: vykreslit okno s prazdnym canvasom lebo self.game == None (hra sa vybere zo suboru)
 
     def add_command(self, command: Command) -> None:
         command.game = self.game
         command.map_editor = self.map_editor
         self.commands.append(command)
+        # TODO: nanovo vykreslit commandy
 
     def remove_last_command(self) -> None:
         if len(self.commands) > 0:
             self.commands.pop()
+        # TODO: nanovo vykreslit commandy
 
     def execute_commands(self) -> None:
         for command in self.commands:
@@ -125,9 +128,15 @@ class GameManager:
     def new_game(self, map_file_path: str) -> None:
         self.game = backend.Game(map_file_path)
 
+        self.commands = []
+        # TODO: nanovo vykreslit hru
+
     def restart_game(self) -> None:
         if self.game is not None:
             self.game.restart_game()
+
+        self.commands = []
+        # TODO: nanovo vykreslit hru
 
 map_editor = MapEditor()
 game_manager = GameManager(map_editor)
