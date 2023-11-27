@@ -10,21 +10,6 @@ class Game:
         self.submarine_oxygen: int = None
         self._generate_game_field()
 
-    def _generate_game_field(self) -> None:
-        self.game_field = []
-
-        with open(self.map_file_path, 'r') as map_file:
-            map_file_content = map_file.read()
-
-        for level_content in map_file_content.split('\n\n')[:-1]:
-            level = [list(field) for field in level_content.split('\n')]
-            self.game_field.append(level)
-
-        submarine_data = map_file_content.split('\n\n')[-1].split(",")
-        self.submarine_position = (int(submarine_data[0]), int(submarine_data[1]), int(submarine_data[2]))
-        self.submarine_oxygen = int(submarine_data[3])
-
-
     def restart_game(self) -> None:
         self._generate_game_field()
 
@@ -55,7 +40,22 @@ class Game:
 
     def go_right(self) -> bool:
         return self._move_to(self.submarine_position[0], self.submarine_position[1], self.submarine_position[2] + 1)
+    
+    def _generate_game_field(self) -> None:
+        self.game_field = []
 
+        with open(self.map_file_path, 'r') as map_file:
+            map_file_content = map_file.read()
+
+        for level_content in map_file_content.split('\n\n')[:-1]:
+            level = [list(field) for field in level_content.split('\n')]
+            self.game_field.append(level)
+
+        submarine_data = map_file_content.split('\n\n')[-1].split(",")
+        self.submarine_position = (int(submarine_data[0]), int(submarine_data[1]), int(submarine_data[2]))
+        self.submarine_oxygen = int(submarine_data[3])
+
+    # vrati True ak sa podarilo pohnut, inak False ak sa nepodarilo
     def _move_to(self, level: int, row: int, column: int) -> bool:
         if not 0 <= level < len(self.game_field):
             return False
@@ -65,21 +65,26 @@ class Game:
             return False
         if self.game_field[level][row][column] == "K":
             return False
+        
+        # doplnenie oxygenu
         if self.game_field[level][row][column] == "B":
             self.submarine_oxygen += Game.BUBBLE_VALUE
+
         self.submarine_position = (level, row, column)
         self.submarine_oxygen -= 1
         return True
 
-class MapEditor:
-    # TODO: trieda pre vykreslovanie vsetkeho
+class WindowEditor:
+    # TODO: trieda pre vykreslovanie vsetkeho v okne
     pass
 
 class Command:
+    # commandy ktore hrac pridava do postupnosti a cela postupnost sa potom skusti cez GameManager.execute_commands()
     
     def __init__(self) -> None:
         self.game: Game = None
-        self.map_editor: MapEditor = None
+        self.map_editor: WindowEditor = None
+        # referencie na objekty sa nastavuju neskor objektom ktory pridava commandy do postupnosti
 
     def execute(self) -> None:
         raise NotImplementedError("This is abstract method!")
@@ -166,16 +171,19 @@ class GoRightCommand(Command):
 class GameManager:
     # TODO: trieda pre riadenie celej hry (aplikacie)
 
-    def __init__(self, map_editor: MapEditor) -> None:
-        self.map_editor: MapEditor = map_editor
+    def __init__(self, map_editor: WindowEditor) -> None:
+        self.map_editor: WindowEditor = map_editor
         self.game: Game = None
 
         self.commands: list[Command] = []
         # TODO: vykreslit okno s prazdnym canvasom lebo self.game == None (hra sa vybere zo suboru)
 
     def add_command(self, command: Command) -> None:
+
+        # tu sa nastavia referencie na objekty
         command.game = self.game
         command.map_editor = self.map_editor
+
         self.commands.append(command)
         # TODO: nanovo vykreslit commandy
 
@@ -196,6 +204,7 @@ class GameManager:
                 return
         # TODO: ponorka ostala na polceste (restart hry?)
 
+    # nova hra ked si hrac vybere nejaku mapu
     def new_game(self, map_file_path: str) -> None:
         self.game = Game(map_file_path)
 
@@ -209,6 +218,8 @@ class GameManager:
         self.commands = []
         # TODO: nanovo vykreslit hru
 
-map_editor = MapEditor()
+# test
+map_editor = WindowEditor()
 game_manager = GameManager(map_editor)
+
 game_manager.new_game("Edusoft_2/test_map.txt")
