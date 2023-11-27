@@ -1,4 +1,5 @@
 import tkinter as tk
+from PIL import Image, ImageTk
 class Game:
 
     BUBBLE_VALUE: int = 5
@@ -82,6 +83,11 @@ class WindowEditor:
         self.oxygen_label = None
         self.depth_slider = None
         self.cell_size = 30
+        self.arrow_up_image = None
+        self.arrow_down_image = None
+        self.arrow_left_image = None
+        self.arrow_right_image = None
+        self.arrow_buttons = None
 
     def create_canvas(self, width, height):
         self.canvas = tk.Canvas(self.master, width=width, height=height, bg="white")
@@ -151,25 +157,35 @@ class WindowEditor:
 
 
     def add_arrow_buttons(self):
-        # Load arrow images
-        arrow_up_image = tk.PhotoImage(file="../Edusoft_2/arrow_up.png")
-        arrow_down_image = tk.PhotoImage(file="../Edusoft_2/arrow_down.png")
-        arrow_left_image = tk.PhotoImage(file="../Edusoft_2/arrow_left.png")
-        arrow_right_image = tk.PhotoImage(file="../Edusoft_2/arrow_right.png")
+        img1 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_up.png")
+        img1 = img1.resize((30, 30), Image.NEAREST)
+        self.arrow_up_image = ImageTk.PhotoImage(img1)
 
-        # Create arrow buttons
-        arrow_up_button = tk.Button(self.master, image=arrow_up_image, command=self.move_up)
-        arrow_down_button = tk.Button(self.master, image=arrow_down_image, command=self.move_down)
-        arrow_left_button = tk.Button(self.master, image=arrow_left_image, command=self.move_left)
-        arrow_right_button = tk.Button(self.master, image=arrow_right_image, command=self.move_right)
+        img2 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_right.png")
+        img2 = img2.resize((30, 30), Image.NEAREST)
+        self.arrow_right_image = ImageTk.PhotoImage(img2)
 
-        # Pack arrow buttons
-        arrow_up_button.pack(side=tk.TOP)
-        arrow_down_button.pack(side=tk.BOTTOM)
-        arrow_left_button.pack(side=tk.LEFT)
-        arrow_right_button.pack(side=tk.RIGHT)
+        img3 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_left.png")
+        img3 = img3.resize((30, 30), Image.NEAREST)
+        self.arrow_left_image = ImageTk.PhotoImage(img3)
 
-        # Bind arrow buttons to arrow keys
+        img4 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_down.png")
+        img4 = img4.resize((30, 30), Image.NEAREST)
+        self.arrow_down_image = ImageTk.PhotoImage(img4)
+
+        button_frame = tk.Frame(self.master)
+        button_frame.pack()
+
+        arrow_up_button = tk.Button(button_frame, image=self.arrow_up_image, command=self.move_up, compound='top', padx=10, pady=10)
+        arrow_down_button = tk.Button(button_frame, image=self.arrow_down_image, command=self.move_down, compound='bottom', padx=10, pady=10)
+        arrow_left_button = tk.Button(button_frame, image=self.arrow_left_image, command=self.move_left, compound='left', padx=50, pady=50)
+        arrow_right_button = tk.Button(button_frame, image=self.arrow_right_image, command=self.move_right, compound='right', padx=5, pady=5)
+
+        arrow_up_button.grid(row=0, column=1, padx=5, pady=5)
+        arrow_down_button.grid(row=2, column=1, padx=5, pady=5)
+        arrow_left_button.grid(row=1, column=0, padx=5, pady=5)
+        arrow_right_button.grid(row=1, column=2, padx=5, pady=5)
+
         self.master.bind("<Up>", lambda event: self.move_up())
         self.master.bind("<Down>", lambda event: self.move_down())
         self.master.bind("<Left>", lambda event: self.move_left())
@@ -196,7 +212,7 @@ class WindowEditor:
             self.update_game_display()
 
     def update_game_display(self):
-        # TODO: Update the display of the game (e.g., redraw the grid, update labels, etc.)
+        # TODO: updejtnut poziciu a prekreslit
         pass
 
 class Command:
