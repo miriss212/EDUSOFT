@@ -1,3 +1,4 @@
+import tkinter as tk
 class Game:
 
     BUBBLE_VALUE: int = 5
@@ -75,8 +76,128 @@ class Game:
         return True
 
 class WindowEditor:
-    # TODO: trieda pre vykreslovanie vsetkeho v okne
-    pass
+    def __init__(self, master):
+        self.master = master
+        self.canvas = None
+        self.oxygen_label = None
+        self.depth_slider = None
+        self.cell_size = 30
+
+    def create_canvas(self, width, height):
+        self.canvas = tk.Canvas(self.master, width=width, height=height, bg="white")
+        self.canvas.pack()
+
+    def draw_grid(self, rows, columns):
+        canvas_width = self.canvas.winfo_reqwidth()
+        canvas_height = self.canvas.winfo_reqheight()
+
+        # Calculate fixed cell size
+        cell_width = self.cell_size
+        cell_height = self.cell_size
+
+        # Calculate the total size of the grid
+        total_width = columns * cell_width
+        total_height = rows * cell_height
+
+        # Calculate the starting position to center the grid
+        start_x = (canvas_width - total_width) // 2
+        start_y = (canvas_height - total_height) // 2
+
+        # Draw vertical lines
+        for i in range(0, columns + 1):
+            x = start_x + i * cell_width
+            self.canvas.create_line(x, start_y, x, start_y + total_height, fill="black")
+
+        # Draw horizontal lines
+        for j in range(0, rows + 1):
+            y = start_y + j * cell_height
+            self.canvas.create_line(start_x, y, start_x + total_width, y, fill="black")
+
+        
+        canvas_width = self.canvas.winfo_reqwidth()
+        canvas_height = self.canvas.winfo_reqheight()
+
+        cell_width = self.cell_size
+        cell_height = self.cell_size 
+
+        # Add oxygen label
+        self.oxygen_label = tk.StringVar()
+        self.oxygen_label.set("Oxygen: N/A")
+        label = tk.Label(self.master, textvariable=self.oxygen_label)
+        label.pack()
+
+        # Add depth slider
+        self.depth_slider = tk.Scale(self.master, from_=1, to=rows, orient=tk.HORIZONTAL, label="Depth",
+                                     length=300, sliderlength=20, command=self.update_depth)
+        self.depth_slider.pack()
+
+        # Add Confirm Depth button
+        confirm_button = tk.Button(self.master, text="Confirm Depth", command=self.confirm_depth)
+        confirm_button.pack()
+
+    def update_oxygen_label(self, oxygen_level):
+        self.oxygen_label.set(f"Oxygen: {oxygen_level}%")
+
+    def update_depth(self, depth):
+        print(f"Submarine depth set to: {depth}")
+
+    def confirm_depth(self):
+        selected_depth = self.depth_slider.get()
+        print(f"Confirmed depth: {selected_depth}")
+
+    def add_button(self, text, command):
+        button = tk.Button(self.master, text=text, command=command)
+        button.pack()
+
+
+    def add_arrow_buttons(self):
+        # Load arrow images
+        arrow_up_image = tk.PhotoImage(file="../Edusoft_2/arrow_up.png")
+        arrow_down_image = tk.PhotoImage(file="../Edusoft_2/arrow_down.png")
+        arrow_left_image = tk.PhotoImage(file="../Edusoft_2/arrow_left.png")
+        arrow_right_image = tk.PhotoImage(file="../Edusoft_2/arrow_right.png")
+
+        # Create arrow buttons
+        arrow_up_button = tk.Button(self.master, image=arrow_up_image, command=self.move_up)
+        arrow_down_button = tk.Button(self.master, image=arrow_down_image, command=self.move_down)
+        arrow_left_button = tk.Button(self.master, image=arrow_left_image, command=self.move_left)
+        arrow_right_button = tk.Button(self.master, image=arrow_right_image, command=self.move_right)
+
+        # Pack arrow buttons
+        arrow_up_button.pack(side=tk.TOP)
+        arrow_down_button.pack(side=tk.BOTTOM)
+        arrow_left_button.pack(side=tk.LEFT)
+        arrow_right_button.pack(side=tk.RIGHT)
+
+        # Bind arrow buttons to arrow keys
+        self.master.bind("<Up>", lambda event: self.move_up())
+        self.master.bind("<Down>", lambda event: self.move_down())
+        self.master.bind("<Left>", lambda event: self.move_left())
+        self.master.bind("<Right>", lambda event: self.move_right())
+
+    def move_up(self):
+        if self.map_editor.game is not None:
+            self.map_editor.game.go_shallower()
+            self.update_game_display()
+
+    def move_down(self):
+        if self.map_editor.game is not None:
+            self.map_editor.game.go_deeper()
+            self.update_game_display()
+
+    def move_left(self):
+        if self.map_editor.game is not None:
+            self.map_editor.game.go_left()
+            self.update_game_display()
+
+    def move_right(self):
+        if self.map_editor.game is not None:
+            self.map_editor.game.go_right()
+            self.update_game_display()
+
+    def update_game_display(self):
+        # TODO: Update the display of the game (e.g., redraw the grid, update labels, etc.)
+        pass
 
 class Command:
     # commandy ktore hrac pridava do postupnosti a cela postupnost sa potom skusti cez GameManager.execute_commands()
@@ -219,7 +340,16 @@ class GameManager:
         # TODO: nanovo vykreslit hru
 
 # test
-map_editor = WindowEditor()
+root = tk.Tk()
+root.title("Submarine Game")
+
+map_editor = WindowEditor(root)
+map_editor.create_canvas(500, 400)
+map_editor.draw_grid(rows=5, columns=5) 
+map_editor.add_arrow_buttons()
+# Simulate updating the oxygen label
+map_editor.update_oxygen_label(oxygen_level=80)
 game_manager = GameManager(map_editor)
+root.mainloop()
 
 game_manager.new_game("Edusoft_2/test_map.txt")
