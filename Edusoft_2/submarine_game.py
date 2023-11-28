@@ -390,11 +390,8 @@ map_editor = WindowEditor(root)
 map_editor.create_canvas(500, 400)
 map_editor.draw_grid(rows=3, columns=4) 
 map_editor.add_arrow_buttons()
-# Simulate updating the oxygen label
 map_editor.update_oxygen_label(oxygen_level=80)
-
 game_manager = GameManager(map_editor)
-# Create a new game before executing any commands
 game_manager.new_game("Edusoft_2/test_map.txt")
 map_editor.update_game_display(game_manager)
 
