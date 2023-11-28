@@ -97,7 +97,11 @@ class WindowEditor:
         self.submarine_image_right = None
         self.submarine_image_down = None
         self.submarine_image_up = None
-        self.submarine_image_id = None  # ID of the displayed submarine image on the canvas
+        self.submarine_image_id = None 
+        self.oxygen_label = tk.StringVar()
+        self.oxygen_label.set("Oxygen: N/A")
+        label = tk.Label(self.master, textvariable=self.oxygen_label)
+        label.pack()
 
 
     def create_canvas(self, width, height):
@@ -129,10 +133,7 @@ class WindowEditor:
             y = start_y + j * cell_height
             self.canvas.create_line(start_x, y, start_x + total_width, y, fill="black")
 
-        self.oxygen_label = tk.StringVar()
-        self.oxygen_label.set("Oxygen: N/A")
-        label = tk.Label(self.master, textvariable=self.oxygen_label)
-        label.pack()
+        #tu bol ten oxygen
 
         self.depth_slider = tk.Scale(self.master, from_=1, to=rows, orient=tk.HORIZONTAL, label="Depth",
                                      length=300, sliderlength=20, command=self.update_depth)
@@ -142,7 +143,7 @@ class WindowEditor:
         confirm_button.pack()
 
     def update_oxygen_label(self, oxygen_level):
-        self.oxygen_label.set(f"Oxygen: {oxygen_level}%")
+        self.oxygen_label.set(f"Oxygen: {oxygen_level}")
 
     def update_depth(self, depth):
         print(f"Submarine depth set to: {depth}")
@@ -194,25 +195,21 @@ class WindowEditor:
     def move_up(self):
         if game_manager is not None:
             game_manager.game.go_forward()
-            #self.update_submarine_image("up")
             self.update_game_display(game_manager, "up")
 
     def move_down(self):
         if game_manager is not None:
             game_manager.game.go_back()
-            #self.update_submarine_image("down")
             self.update_game_display(game_manager, "down")
             
     def move_left(self):
         if game_manager is not None:
             game_manager.game.go_left()
-            #self.update_submarine_image("left")
             self.update_game_display(game_manager, "left")
 
     def move_right(self):
         if game_manager is not None:
             game_manager.game.go_right()
-            #self.update_submarine_image("right")
             self.update_game_display(game_manager, "right")
 
     
@@ -234,8 +231,8 @@ class WindowEditor:
         submarine_level, submarine_row, submarine_column = game_manager.game.submarine_position
         cell_size = self.cell_size
         self.update_submarine_image(direction)
-
         self.update_oxygen_label(game_manager.game.submarine_oxygen)
+        print(game_manager.game.submarine_oxygen)
         
         self.depth_slider.set(submarine_level)
         self.canvas.update()
@@ -447,7 +444,7 @@ map_editor.create_canvas(500, 400)
 map_editor.draw_grid(rows=3, columns=4)
 map_editor.load_submarine_images()  
 map_editor.add_arrow_buttons()
-map_editor.update_oxygen_label(oxygen_level=80)
+#map_editor.update_oxygen_label(oxygen_level=80)
 game_manager = GameManager(map_editor)
 game_manager.new_game("Edusoft_2/test_map.txt")
 map_editor.update_game_display(game_manager, "right")
