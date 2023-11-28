@@ -76,9 +76,12 @@ class Game:
 
         self.submarine_position = (level, row, column)
         self.submarine_oxygen -= 1
+
+
         return True
 
 class WindowEditor:
+
     def __init__(self, master):
         self.master = master
         self.canvas = None
@@ -90,6 +93,12 @@ class WindowEditor:
         self.arrow_left_image = None
         self.arrow_right_image = None
         self.arrow_buttons = None
+        self.submarine_image_left = None
+        self.submarine_image_right = None
+        self.submarine_image_down = None
+        self.submarine_image_up = None
+        self.submarine_image_id = None  # ID of the displayed submarine image on the canvas
+
 
     def create_canvas(self, width, height):
         self.canvas = tk.Canvas(self.master, width=width, height=height, bg="white")
@@ -185,26 +194,30 @@ class WindowEditor:
     def move_up(self):
         if game_manager is not None:
             game_manager.game.go_forward()
-            self.update_game_display(game_manager)
+            #self.update_submarine_image("up")
+            self.update_game_display(game_manager, "up")
 
     def move_down(self):
         if game_manager is not None:
             game_manager.game.go_back()
-            self.update_game_display(game_manager)
+            #self.update_submarine_image("down")
+            self.update_game_display(game_manager, "down")
             
     def move_left(self):
         if game_manager is not None:
             game_manager.game.go_left()
-            self.update_game_display(game_manager)
+            #self.update_submarine_image("left")
+            self.update_game_display(game_manager, "left")
 
     def move_right(self):
         if game_manager is not None:
             game_manager.game.go_right()
-            self.update_game_display(game_manager)
+            #self.update_submarine_image("right")
+            self.update_game_display(game_manager, "right")
 
     
 
-    def update_game_display(self, game_manager):
+    def update_game_display(self, game_manager, direction):
 
         self.canvas.delete("all")
         # Redraw grid
@@ -220,20 +233,69 @@ class WindowEditor:
 
         submarine_level, submarine_row, submarine_column = game_manager.game.submarine_position
         cell_size = self.cell_size
-
-        # poloha ponorky
-        
-        x = start_x + submarine_column * cell_size
-        y = start_y + submarine_row * cell_size
-
-        #ponorka
-        submarine_rect = self.canvas.create_rectangle(
-            x, y, x + cell_size, y + cell_size, fill="blue", outline="black"
-        )
+        self.update_submarine_image(direction)
 
         self.update_oxygen_label(game_manager.game.submarine_oxygen)
+        
         self.depth_slider.set(submarine_level)
         self.canvas.update()
+
+    def load_submarine_images(self):
+        img_left = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\EDUSOFT-1\\Edusoft_2\\left_sub.png")
+        img_left = img_left.resize((30, 30), Image.NEAREST)
+        self.submarine_image_left = ImageTk.PhotoImage(img_left)
+
+        img_right = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\right_sub.png")  # Replace with the actual path
+        img_right = img_right.resize((30, 30), Image.NEAREST)
+        self.submarine_image_right = ImageTk.PhotoImage(img_right)
+
+        img_up = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\EDUSOFT-1\\Edusoft_2\\up_sub.png")
+        img_up = img_up.resize((30, 30), Image.NEAREST)
+        self.submarine_image_up = ImageTk.PhotoImage(img_up)
+
+        img_down = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\down_sub.png")  # Replace with the actual path
+        img_down = img_down.resize((30, 30), Image.NEAREST)
+        self.submarine_image_down = ImageTk.PhotoImage(img_down)
+
+    def update_submarine_image(self, direction):
+        print(direction)
+        if (
+            self.submarine_image_left is not None
+            and self.submarine_image_right is not None
+            and self.submarine_image_up is not None
+            and self.submarine_image_down is not None
+        ):
+            submarine_level, submarine_row, submarine_column = game_manager.game.submarine_position
+            cell_size = self.cell_size
+            canvas_width = self.canvas.winfo_reqwidth()
+            canvas_height = self.canvas.winfo_reqheight()
+            
+            total_width = 4 * self.cell_size
+            total_height = 3 * self.cell_size
+
+            start_x = (canvas_width - total_width) // 2
+            start_y = (canvas_height - total_height) // 2
+
+            x = (submarine_column * cell_size) + (cell_size // 2) + start_x
+            y = (submarine_row * cell_size) + (cell_size // 2) + start_y
+
+            submarine_image = None
+            if direction == "left":
+                submarine_image = self.submarine_image_left
+            elif direction == "right":
+                submarine_image = self.submarine_image_right
+            elif direction == "up":
+                submarine_image = self.submarine_image_up
+            elif direction == "down":
+                submarine_image = self.submarine_image_down
+
+            if self.submarine_image_id:
+                self.canvas.delete(self.submarine_image_id)
+
+            self.submarine_image_id = self.canvas.create_image(x, y, anchor=tk.CENTER, image=submarine_image)
+
+
+    
 
 class Command:
     # commandy ktore hrac pridava do postupnosti a cela postupnost sa potom skusti cez GameManager.execute_commands()
@@ -382,11 +444,12 @@ root.title("Submarine Game")
 
 map_editor = WindowEditor(root)
 map_editor.create_canvas(500, 400)
-map_editor.draw_grid(rows=3, columns=4) 
+map_editor.draw_grid(rows=3, columns=4)
+map_editor.load_submarine_images()  
 map_editor.add_arrow_buttons()
 map_editor.update_oxygen_label(oxygen_level=80)
 game_manager = GameManager(map_editor)
 game_manager.new_game("Edusoft_2/test_map.txt")
-map_editor.update_game_display(game_manager)
+map_editor.update_game_display(game_manager, "right")
 
 root.mainloop()
