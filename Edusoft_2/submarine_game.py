@@ -119,13 +119,6 @@ class WindowEditor:
             y = start_y + j * cell_height
             self.canvas.create_line(start_x, y, start_x + total_width, y, fill="black")
 
-        
-        canvas_width = self.canvas.winfo_reqwidth()
-        canvas_height = self.canvas.winfo_reqheight()
-
-        cell_width = self.cell_size
-        cell_height = self.cell_size 
-
         # Add oxygen label
         self.oxygen_label = tk.StringVar()
         self.oxygen_label.set("Oxygen: N/A")
@@ -192,28 +185,68 @@ class WindowEditor:
         self.master.bind("<Right>", lambda event: self.move_right())
 
     def move_up(self):
-        if self.map_editor.game is not None:
-            self.map_editor.game.go_shallower()
-            self.update_game_display()
+        if map_editor is not None:
+            game_manager.game.go_forward()
+            self.update_game_display(game_manager)
 
     def move_down(self):
-        if self.map_editor.game is not None:
-            self.map_editor.game.go_deeper()
-            self.update_game_display()
+        if map_editor is not None:
+            game_manager.game.go_back()
+            self.update_game_display(game_manager)
+            
 
     def move_left(self):
-        if self.map_editor.game is not None:
-            self.map_editor.game.go_left()
-            self.update_game_display()
+        if map_editor is not None:
+            game_manager.game.go_left()
+            self.update_game_display(game_manager)
 
     def move_right(self):
-        if self.map_editor.game is not None:
-            self.map_editor.game.go_right()
-            self.update_game_display()
+        if map_editor is not None:
+            game_manager.game.go_right()
+            self.update_game_display(game_manager)
 
-    def update_game_display(self):
-        # TODO: updejtnut poziciu a prekreslit
-        pass
+    
+
+    def update_game_display(self, game_manager):
+        # Clear the canvas
+        self.canvas.delete("all")
+
+        # Redraw the grid
+        self.draw_grid(rows=3, columns=4)
+        canvas_width = self.canvas.winfo_reqwidth()
+        canvas_height = self.canvas.winfo_reqheight()
+
+        total_width = 4 * self.cell_size
+        total_height = 3 * self.cell_size
+
+        start_x = (canvas_width - total_width) // 2
+        start_y = (canvas_height - total_height) // 2
+
+        # Draw the submarine
+        submarine_level, submarine_row, submarine_column = game_manager.game.submarine_position
+        print(submarine_column)
+        cell_size = self.cell_size
+
+        # Calculate the coordinates for the submarine
+        
+        x = start_x + submarine_column * cell_size
+        y = start_y + submarine_row * cell_size
+
+        # Draw a rectangle representing the submarine
+        submarine_rect = self.canvas.create_rectangle(
+            x, y, x + cell_size, y + cell_size, fill="blue", outline="black"
+        )
+
+        # TODO: Add code to draw other game elements as needed
+
+        # Update the oxygen label
+        self.update_oxygen_label(game_manager.game.submarine_oxygen)
+
+        # Update the depth slider (assuming the depth is the level of the submarine)
+        self.depth_slider.set(submarine_level)
+
+        # Update the canvas
+        self.canvas.update()
 
 class Command:
     # commandy ktore hrac pridava do postupnosti a cela postupnost sa potom skusti cez GameManager.execute_commands()
@@ -333,6 +366,7 @@ class GameManager:
         for command in self.commands:
             # TODO: oznac vykonavany command cez self.map_editor
             command.execute()
+            self.map_editor.update_game_display(game_manager) 
             if command.game.check_lose():
                 # TODO: osetrit prehru
                 return
@@ -355,17 +389,20 @@ class GameManager:
         self.commands = []
         # TODO: nanovo vykreslit hru
 
-# test
+#test
 root = tk.Tk()
 root.title("Submarine Game")
 
 map_editor = WindowEditor(root)
 map_editor.create_canvas(500, 400)
-map_editor.draw_grid(rows=5, columns=5) 
+map_editor.draw_grid(rows=3, columns=4) 
 map_editor.add_arrow_buttons()
 # Simulate updating the oxygen label
 map_editor.update_oxygen_label(oxygen_level=80)
-game_manager = GameManager(map_editor)
-root.mainloop()
 
+game_manager = GameManager(map_editor)
+# Create a new game before executing any commands
 game_manager.new_game("Edusoft_2/test_map.txt")
+map_editor.update_game_display(game_manager)
+
+root.mainloop()
