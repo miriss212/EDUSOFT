@@ -1,5 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
+
+
 class Game:
 
     BUBBLE_VALUE: int = 5
@@ -185,23 +187,23 @@ class WindowEditor:
         self.master.bind("<Right>", lambda event: self.move_right())
 
     def move_up(self):
-        if map_editor is not None:
+        if game_manager is not None:
             game_manager.game.go_forward()
             self.update_game_display(game_manager)
 
     def move_down(self):
-        if map_editor is not None:
+        if game_manager is not None:
             game_manager.game.go_back()
             self.update_game_display(game_manager)
             
 
     def move_left(self):
-        if map_editor is not None:
+        if game_manager is not None:
             game_manager.game.go_left()
             self.update_game_display(game_manager)
 
     def move_right(self):
-        if map_editor is not None:
+        if game_manager is not None:
             game_manager.game.go_right()
             self.update_game_display(game_manager)
 
@@ -215,37 +217,28 @@ class WindowEditor:
         self.draw_grid(rows=3, columns=4)
         canvas_width = self.canvas.winfo_reqwidth()
         canvas_height = self.canvas.winfo_reqheight()
-
+        
         total_width = 4 * self.cell_size
         total_height = 3 * self.cell_size
 
         start_x = (canvas_width - total_width) // 2
         start_y = (canvas_height - total_height) // 2
 
-        # Draw the submarine
         submarine_level, submarine_row, submarine_column = game_manager.game.submarine_position
-        print(submarine_column)
         cell_size = self.cell_size
 
-        # Calculate the coordinates for the submarine
+        # poloha ponorky
         
         x = start_x + submarine_column * cell_size
         y = start_y + submarine_row * cell_size
 
-        # Draw a rectangle representing the submarine
+        #ponorka
         submarine_rect = self.canvas.create_rectangle(
             x, y, x + cell_size, y + cell_size, fill="blue", outline="black"
         )
 
-        # TODO: Add code to draw other game elements as needed
-
-        # Update the oxygen label
         self.update_oxygen_label(game_manager.game.submarine_oxygen)
-
-        # Update the depth slider (assuming the depth is the level of the submarine)
         self.depth_slider.set(submarine_level)
-
-        # Update the canvas
         self.canvas.update()
 
 class Command:
