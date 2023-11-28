@@ -99,40 +99,36 @@ class WindowEditor:
         canvas_width = self.canvas.winfo_reqwidth()
         canvas_height = self.canvas.winfo_reqheight()
 
-        # Calculate fixed cell size
         cell_width = self.cell_size
         cell_height = self.cell_size
 
-        # Calculate the total size of the grid
+        # velkost gridu
         total_width = columns * cell_width
         total_height = rows * cell_height
 
-        # Calculate the starting position to center the grid
+        # vycentrovat grid na stred
         start_x = (canvas_width - total_width) // 2
         start_y = (canvas_height - total_height) // 2
 
-        # Draw vertical lines
+        # vertikalne ciarky
         for i in range(0, columns + 1):
             x = start_x + i * cell_width
             self.canvas.create_line(x, start_y, x, start_y + total_height, fill="black")
 
-        # Draw horizontal lines
+        # horizontalne ciarky
         for j in range(0, rows + 1):
             y = start_y + j * cell_height
             self.canvas.create_line(start_x, y, start_x + total_width, y, fill="black")
 
-        # Add oxygen label
         self.oxygen_label = tk.StringVar()
         self.oxygen_label.set("Oxygen: N/A")
         label = tk.Label(self.master, textvariable=self.oxygen_label)
         label.pack()
 
-        # Add depth slider
         self.depth_slider = tk.Scale(self.master, from_=1, to=rows, orient=tk.HORIZONTAL, label="Depth",
                                      length=300, sliderlength=20, command=self.update_depth)
         self.depth_slider.pack()
 
-        # Add Confirm Depth button
         confirm_button = tk.Button(self.master, text="Confirm Depth", command=self.confirm_depth)
         confirm_button.pack()
 
@@ -196,7 +192,6 @@ class WindowEditor:
             game_manager.game.go_back()
             self.update_game_display(game_manager)
             
-
     def move_left(self):
         if game_manager is not None:
             game_manager.game.go_left()
@@ -210,10 +205,9 @@ class WindowEditor:
     
 
     def update_game_display(self, game_manager):
-        # Clear the canvas
-        self.canvas.delete("all")
 
-        # Redraw the grid
+        self.canvas.delete("all")
+        # Redraw grid
         self.draw_grid(rows=3, columns=4)
         canvas_width = self.canvas.winfo_reqwidth()
         canvas_height = self.canvas.winfo_reqheight()
