@@ -159,6 +159,7 @@ class WindowEditor:
     def confirm_depth(self):
         selected_depth = self.depth_slider.get()
         print(f"Confirmed depth: {selected_depth}")
+        self.update_game_display(game_manager, "right")
 
     def add_button(self, text, command):
         button = tk.Button(self.master, text=text, command=command)
@@ -246,20 +247,18 @@ class WindowEditor:
         self.current_depth = submarine_level
         self.depth_slider.set(submarine_level)
 
-        # Add an image to the cell where "K" is located
-        for level, rows in enumerate(game_manager.game.game_field):
-            for row, columns in enumerate(rows):
-                for column, cell in enumerate(columns):
-                    x = start_x + column * cell_size
-                    y = start_y + row * cell_size
-                    
-                    if cell == "B":
-                        print(f"{x},{y}")
-                        img_bubble = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\bubble.png")
-                        img_bubble = img_bubble.resize((cell_size, cell_size), Image.NEAREST)
-                        self.img_bubble_id = ImageTk.PhotoImage(img_bubble)
-                        self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_bubble_id)
+         # Add an image to the cell where "B" is located in the current level
+        for row, columns in enumerate(game_manager.game.game_field[submarine_level]):
+            for column, cell in enumerate(columns):
+                x = start_x + column * cell_size
+                y = start_y + row * cell_size
 
+                if cell == "B":
+                    print(f"{x},{y}")
+                    img_bubble = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\bubble.png")
+                    img_bubble = img_bubble.resize((cell_size, cell_size), Image.NEAREST)
+                    self.img_bubble_id = ImageTk.PhotoImage(img_bubble)
+                    self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_bubble_id)
 
         self.canvas.update()
 
