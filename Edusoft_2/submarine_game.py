@@ -87,7 +87,7 @@ class WindowEditor:
         self.canvas = None
         self.oxygen_label = None
         self.depth_slider = None
-        self.cell_size = 30
+        self.cell_size = 40
         self.arrow_up_image = None
         self.arrow_down_image = None
         self.arrow_left_image = None
@@ -104,10 +104,18 @@ class WindowEditor:
         label.pack()
         self.current_depth = None
         self.img_bubble_id = None
+        self.img_background_id = None
 
     def create_canvas(self, width, height):
         self.canvas = tk.Canvas(self.master, width=width, height=height, bg="white")
         self.canvas.pack()
+
+         # Set the background image
+        img_background = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\underwater.png")
+        img_background = img_background.resize((width, height), Image.NEAREST)
+        self.img_background_id = ImageTk.PhotoImage(img_background)
+        self.canvas.create_image(width // 2, height // 2, anchor=tk.CENTER, image=self.img_background_id, tags="background")
+
 
     def draw_grid(self, rows, columns):
         canvas_width = self.canvas.winfo_reqwidth()
@@ -226,8 +234,13 @@ class WindowEditor:
     def update_game_display(self, game_manager, direction):
 
         self.canvas.delete("all")
+    
+        # Redraw the background
+        self.canvas.create_image(self.canvas.winfo_reqwidth() // 2, self.canvas.winfo_reqheight() // 2, anchor=tk.CENTER, image=self.img_background_id, tags="background")
+        
         # Redraw grid
         self.draw_grid(rows=3, columns=4)
+
         canvas_width = self.canvas.winfo_reqwidth()
         canvas_height = self.canvas.winfo_reqheight()
         
@@ -264,19 +277,19 @@ class WindowEditor:
 
     def load_submarine_images(self):
         img_left = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\EDUSOFT-1\\Edusoft_2\\left_sub.png")
-        img_left = img_left.resize((30, 30), Image.NEAREST)
+        img_left = img_left.resize((40, 40), Image.NEAREST)
         self.submarine_image_left = ImageTk.PhotoImage(img_left)
 
         img_right = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\right_sub.png")  # Replace with the actual path
-        img_right = img_right.resize((30, 30), Image.NEAREST)
+        img_right = img_right.resize((40, 40), Image.NEAREST)
         self.submarine_image_right = ImageTk.PhotoImage(img_right)
 
         img_up = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\EDUSOFT-1\\Edusoft_2\\up_sub.png")
-        img_up = img_up.resize((30, 30), Image.NEAREST)
+        img_up = img_up.resize((40, 40), Image.NEAREST)
         self.submarine_image_up = ImageTk.PhotoImage(img_up)
 
         img_down = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\down_sub.png")  # Replace with the actual path
-        img_down = img_down.resize((30, 30), Image.NEAREST)
+        img_down = img_down.resize((40, 40), Image.NEAREST)
         self.submarine_image_down = ImageTk.PhotoImage(img_down)
 
     def update_submarine_image(self, direction):
