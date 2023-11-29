@@ -105,6 +105,7 @@ class WindowEditor:
         self.current_depth = None
         self.img_bubble_id = None
         self.img_background_id = None
+        self.img_coin_id = None
 
     def create_canvas(self, width, height):
         self.canvas = tk.Canvas(self.master, width=width, height=height, bg="white")
@@ -267,12 +268,21 @@ class WindowEditor:
                 y = start_y + row * cell_size
 
                 if cell == "B":
-                    print(f"{x},{y}")
                     img_bubble = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\bubble.png")
                     img_bubble = img_bubble.resize((cell_size, cell_size), Image.NEAREST)
                     self.img_bubble_id = ImageTk.PhotoImage(img_bubble)
                     self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_bubble_id)
-
+                
+                if cell == "P":
+                    if(submarine_column == column and submarine_row == row):
+                        print(game_manager.game.check_win())
+                        game_manager.game.game_field[self.current_depth][row][column] = "V"
+                        print(game_manager.game.submarine_position)
+                    img_coin = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\coin.png")
+                    img_coin = img_coin.resize((20, 20), Image.NEAREST)
+                    self.img_coin_id = ImageTk.PhotoImage(img_coin)
+                    self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_coin_id)
+                    
         self.canvas.update()
 
     def load_submarine_images(self):
