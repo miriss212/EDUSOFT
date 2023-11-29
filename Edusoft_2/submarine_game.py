@@ -102,7 +102,8 @@ class WindowEditor:
         self.oxygen_label.set("Oxygen: N/A")
         label = tk.Label(self.master, textvariable=self.oxygen_label)
         label.pack()
-
+        self.current_depth = None
+        self.img_bubble_id = None
 
     def create_canvas(self, width, height):
         self.canvas = tk.Canvas(self.master, width=width, height=height, bg="white")
@@ -133,10 +134,8 @@ class WindowEditor:
             y = start_y + j * cell_height
             self.canvas.create_line(start_x, y, start_x + total_width, y, fill="black")
 
-        #tu bol ten oxygen
-
         self.depth_slider = tk.Scale(self.master, from_=1, to=rows, orient=tk.HORIZONTAL, label="Depth",
-                                     length=300, sliderlength=20, command=self.update_depth)
+                                     length=200, sliderlength=20, command=self.update_depth)
         self.depth_slider.pack()
 
         confirm_button = tk.Button(self.master, text="Confirm Depth", command=self.confirm_depth)
@@ -146,7 +145,16 @@ class WindowEditor:
         self.oxygen_label.set(f"Oxygen: {oxygen_level}")
 
     def update_depth(self, depth):
-        print(f"Submarine depth set to: {depth}")
+        new_depth = int(depth)
+        if new_depth > self.current_depth:
+            print("Going deeper!")
+            game_manager.game.go_deeper()
+        elif new_depth < self.current_depth:
+            print("Going shallower!")
+            game_manager.game.go_shallower()
+        self.current_depth = new_depth
+
+        print(f"Submarine depth set to: {new_depth}")
 
     def confirm_depth(self):
         selected_depth = self.depth_slider.get()
@@ -234,7 +242,25 @@ class WindowEditor:
         self.update_oxygen_label(game_manager.game.submarine_oxygen)
         print(game_manager.game.submarine_oxygen)
         
+        submarine_level, _, _ = game_manager.game.submarine_position
+        self.current_depth = submarine_level
         self.depth_slider.set(submarine_level)
+
+        # Add an image to the cell where "K" is located
+        for level, rows in enumerate(game_manager.game.game_field):
+            for row, columns in enumerate(rows):
+                for column, cell in enumerate(columns):
+                    x = start_x + column * cell_size
+                    y = start_y + row * cell_size
+                    
+                    if cell == "B":
+                        print(f"{x},{y}")
+                        img_bubble = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\bubble.png")
+                        img_bubble = img_bubble.resize((cell_size, cell_size), Image.NEAREST)
+                        self.img_bubble_id = ImageTk.PhotoImage(img_bubble)
+                        self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_bubble_id)
+
+
         self.canvas.update()
 
     def load_submarine_images(self):
@@ -444,9 +470,9 @@ map_editor.create_canvas(500, 400)
 map_editor.draw_grid(rows=3, columns=4)
 map_editor.load_submarine_images()  
 map_editor.add_arrow_buttons()
-#map_editor.update_oxygen_label(oxygen_level=80)
 game_manager = GameManager(map_editor)
 game_manager.new_game("Edusoft_2/test_map.txt")
+map_editor.depth_slider.set(game_manager.game.submarine_position[0])
 map_editor.update_game_display(game_manager, "right")
 
 root.mainloop()
