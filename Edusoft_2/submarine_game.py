@@ -112,7 +112,7 @@ class WindowEditor:
         self.canvas.pack()
 
          # Set the background image
-        img_background = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\underwater.png")
+        img_background = Image.open("Edusoft_2\\underwater.png")
         img_background = img_background.resize((width, height), Image.NEAREST)
         self.img_background_id = ImageTk.PhotoImage(img_background)
         self.canvas.create_image(width // 2, height // 2, anchor=tk.CENTER, image=self.img_background_id, tags="background")
@@ -176,19 +176,19 @@ class WindowEditor:
 
 
     def add_arrow_buttons(self):
-        img1 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_up.png")
+        img1 = Image.open("Edusoft_2\\arrow_up.png")
         img1 = img1.resize((30, 30), Image.NEAREST)
         self.arrow_up_image = ImageTk.PhotoImage(img1)
 
-        img2 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_right.png")
+        img2 = Image.open("Edusoft_2\\arrow_right.png")
         img2 = img2.resize((30, 30), Image.NEAREST)
         self.arrow_right_image = ImageTk.PhotoImage(img2)
 
-        img3 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_left.png")
+        img3 = Image.open("Edusoft_2\\arrow_left.png")
         img3 = img3.resize((30, 30), Image.NEAREST)
         self.arrow_left_image = ImageTk.PhotoImage(img3)
 
-        img4 = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\arrow_down.png")
+        img4 = Image.open("Edusoft_2\\arrow_down.png")
         img4 = img4.resize((30, 30), Image.NEAREST)
         self.arrow_down_image = ImageTk.PhotoImage(img4)
 
@@ -268,7 +268,7 @@ class WindowEditor:
                 y = start_y + row * cell_size
 
                 if cell == "B":
-                    img_bubble = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\bubble.png")
+                    img_bubble = Image.open("Edusoft_2\\bubble.png")
                     img_bubble = img_bubble.resize((cell_size, cell_size), Image.NEAREST)
                     self.img_bubble_id = ImageTk.PhotoImage(img_bubble)
                     self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_bubble_id)
@@ -278,7 +278,7 @@ class WindowEditor:
                         print(game_manager.game.check_win())
                         game_manager.game.game_field[self.current_depth][row][column] = "V"
                         print(game_manager.game.submarine_position)
-                    img_coin = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\coin.png")
+                    img_coin = Image.open("Edusoft_2\\coin.png")
                     img_coin = img_coin.resize((20, 20), Image.NEAREST)
                     self.img_coin_id = ImageTk.PhotoImage(img_coin)
                     self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_coin_id)
@@ -286,19 +286,19 @@ class WindowEditor:
         self.canvas.update()
 
     def load_submarine_images(self):
-        img_left = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\EDUSOFT-1\\Edusoft_2\\left_sub.png")
+        img_left = Image.open("Edusoft_2\\left_sub.png")
         img_left = img_left.resize((40, 40), Image.NEAREST)
         self.submarine_image_left = ImageTk.PhotoImage(img_left)
 
-        img_right = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\right_sub.png")  # Replace with the actual path
+        img_right = Image.open("Edusoft_2\\right_sub.png")  # Replace with the actual path
         img_right = img_right.resize((40, 40), Image.NEAREST)
         self.submarine_image_right = ImageTk.PhotoImage(img_right)
 
-        img_up = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\EDUSOFT-1\\Edusoft_2\\up_sub.png")
+        img_up = Image.open("Edusoft_2\\up_sub.png")
         img_up = img_up.resize((40, 40), Image.NEAREST)
         self.submarine_image_up = ImageTk.PhotoImage(img_up)
 
-        img_down = Image.open("c:\\Users\\cidom\\OneDrive\\Dokumenty\\mAIN2\\EDUSOFT-1\\Edusoft_2\\down_sub.png")  # Replace with the actual path
+        img_down = Image.open("Edusoft_2\\down_sub.png")  # Replace with the actual path
         img_down = img_down.resize((40, 40), Image.NEAREST)
         self.submarine_image_down = ImageTk.PhotoImage(img_down)
 
