@@ -30,7 +30,7 @@ class Game:
     def go_shallower(self) -> bool:
         return self._move_to(self.submarine_position[0] - 1, self.submarine_position[1], self.submarine_position[2])
 
-    def go_deeper(self) -> bool:
+    def go_deeper(self) -> bool:      
         return self._move_to(self.submarine_position[0] + 1, self.submarine_position[1], self.submarine_position[2])
 
     def go_forward(self) -> bool:
@@ -101,21 +101,61 @@ class WindowEditor:
         self.oxygen_label = tk.StringVar()
         self.oxygen_label.set("Oxygen: N/A")
         label = tk.Label(self.master, textvariable=self.oxygen_label)
-        label.pack()
+        label.grid(row=0, column=0, pady=5, columnspan=3)
         self.current_depth = None
         self.img_bubble_id = None
         self.img_background_id = None
         self.img_coin_id = None
 
+        self.create_canvas(500, 400)
+        self.draw_grid(rows=3, columns=4)
+        self.load_submarine_images()
+        self.add_arrow_buttons()
+
+        self.create_slider()
+    
+
+
+        """confirm_button = tk.Button(self.master, text="Confirm Depth", command=self.confirm_depth)
+        confirm_button.grid(row=1, column=1, pady=5)"""
+
+
+    def create_slider(self):
+        # Create the depth slider only once during initialization
+        self.depth_slider = tk.Scale(self.master, from_=0, to=2,
+                                     orient=tk.HORIZONTAL, label="Depth",
+                                     length=200, sliderlength=20, command=self.update_depth_slider)
+        self.depth_slider.grid(row=0, column=1, padx=10, pady=10, sticky="n")
+
     def create_canvas(self, width, height):
         self.canvas = tk.Canvas(self.master, width=width, height=height, bg="white")
-        self.canvas.pack()
+        self.canvas.grid(row=0, column=0, padx=10, pady=10)  # Use grid to position the 
 
-         # Set the background image
         img_background = Image.open("Edusoft_2\\underwater.png")
         img_background = img_background.resize((width, height), Image.NEAREST)
         self.img_background_id = ImageTk.PhotoImage(img_background)
         self.canvas.create_image(width // 2, height // 2, anchor=tk.CENTER, image=self.img_background_id, tags="background")
+
+    def create_rounded_rectangle(self, width, height, radius, **kwargs):
+        border_width = kwargs.pop('border_width', 1)
+
+        # Calculate the starting point to center the rectangle
+        start_x = (self.canvas.winfo_reqwidth() - width) // 2 
+        start_y = (self.canvas.winfo_reqheight() - height) // 2 
+
+        points = [
+            start_x + radius, start_y,
+            start_x + width - radius, start_y,
+            start_x + width, start_y + radius,
+            start_x + width, start_y + height - radius,
+            start_x + width - radius, start_y + height,
+            start_x + radius, start_y + height,
+            start_x, start_y + height - radius,
+            start_x, start_y + radius,
+        ]
+
+        self.canvas.create_polygon(points, outline=kwargs.get('outline', 'lightblue'), fill=kwargs.get('fill', ''), width=border_width, tags="rounded_rect")
+
 
 
     def draw_grid(self, rows, columns):
@@ -133,6 +173,9 @@ class WindowEditor:
         start_x = (canvas_width - total_width) // 2
         start_y = (canvas_height - total_height) // 2
 
+        #self.create_rounded_rectangle(start_x - cell_width//2, start_y - cell_height//2, (cell_width*(columns+1))+20,(cell_width*(rows+1))+20 , 20, fill='lightblue', outline='black', border_width=2)
+        self.create_rounded_rectangle(cell_width*(columns+1), cell_height*(rows+1), 20, fill='lightblue', outline='black', border_width=2)
+
         # vertikalne ciarky
         for i in range(0, columns + 1):
             x = start_x + i * cell_width
@@ -143,36 +186,46 @@ class WindowEditor:
             y = start_y + j * cell_height
             self.canvas.create_line(start_x, y, start_x + total_width, y, fill="black")
 
-        self.depth_slider = tk.Scale(self.master, from_=1, to=rows, orient=tk.HORIZONTAL, label="Depth",
+        """self.depth_slider = tk.Scale(self.master, from_=1, to=rows, orient=tk.HORIZONTAL, label="Depth",
                                      length=200, sliderlength=20, command=self.update_depth)
-        self.depth_slider.pack()
+        self.depth_slider.pack()"""
 
-        confirm_button = tk.Button(self.master, text="Confirm Depth", command=self.confirm_depth)
-        confirm_button.pack()
-
+        """confirm_button = tk.Button(self.master, text="Confirm Depth", command=self.confirm_depth)
+        confirm_button.pack()"""
+        #self.canvas.tag_lower("rounded_rect") 
+        
+        
+        
     def update_oxygen_label(self, oxygen_level):
         self.oxygen_label.set(f"Oxygen: {oxygen_level}")
 
     def update_depth(self, depth):
         new_depth = int(depth)
+        print(f"depth zo slajdera{new_depth}")
         if new_depth > self.current_depth:
             print("Going deeper!")
             game_manager.game.go_deeper()
-        elif new_depth < self.current_depth:
+        if new_depth < self.current_depth:
             print("Going shallower!")
             game_manager.game.go_shallower()
+            
         self.current_depth = new_depth
-
+        #self.update_game_display(game_manager, "right")
         print(f"Submarine depth set to: {new_depth}")
 
-    def confirm_depth(self):
-        selected_depth = self.depth_slider.get()
-        print(f"Confirmed depth: {selected_depth}")
-        self.update_game_display(game_manager, "right")
 
-    def add_button(self, text, command):
+    
+
+
+
+    #def confirm_depth(self):
+    #    selected_depth = self.depth_slider.get()
+    #    print(f"Confirmed depth: {selected_depth}")
+        #self.update_game_display(game_manager, "right")
+
+    """def add_button(self, text, command):
         button = tk.Button(self.master, text=text, command=command)
-        button.pack()
+        button.pack()"""
 
 
     def add_arrow_buttons(self):
@@ -192,13 +245,14 @@ class WindowEditor:
         img4 = img4.resize((30, 30), Image.NEAREST)
         self.arrow_down_image = ImageTk.PhotoImage(img4)
 
-        button_frame = tk.Frame(self.master)
-        button_frame.pack()
+        arrow_button_frame = tk.Frame(self.master)
+        arrow_button_frame.grid(row=2, column=1, pady=5)  # Position it under the depth_slider
 
-        arrow_up_button = tk.Button(button_frame, image=self.arrow_up_image, command=self.move_up, compound='top', padx=10, pady=10)
-        arrow_down_button = tk.Button(button_frame, image=self.arrow_down_image, command=self.move_down, compound='bottom', padx=10, pady=10)
-        arrow_left_button = tk.Button(button_frame, image=self.arrow_left_image, command=self.move_left, compound='left', padx=50, pady=50)
-        arrow_right_button = tk.Button(button_frame, image=self.arrow_right_image, command=self.move_right, compound='right', padx=5, pady=5)
+        # Add arrow buttons to the new frame
+        arrow_up_button = tk.Button(arrow_button_frame, image=self.arrow_up_image, command=self.move_up, compound='top', padx=10, pady=10)
+        arrow_down_button = tk.Button(arrow_button_frame, image=self.arrow_down_image, command=self.move_down, compound='bottom', padx=10, pady=10)
+        arrow_left_button = tk.Button(arrow_button_frame, image=self.arrow_left_image, command=self.move_left, compound='left', padx=50, pady=50)
+        arrow_right_button = tk.Button(arrow_button_frame, image=self.arrow_right_image, command=self.move_right, compound='right', padx=5, pady=5)
 
         arrow_up_button.grid(row=0, column=1, padx=5, pady=5)
         arrow_down_button.grid(row=2, column=1, padx=5, pady=5)
@@ -242,6 +296,8 @@ class WindowEditor:
         # Redraw grid
         self.draw_grid(rows=3, columns=4)
 
+        #self.canvas.tag_raise("rounded_rect")
+
         canvas_width = self.canvas.winfo_reqwidth()
         canvas_height = self.canvas.winfo_reqheight()
         
@@ -282,8 +338,17 @@ class WindowEditor:
                     img_coin = img_coin.resize((20, 20), Image.NEAREST)
                     self.img_coin_id = ImageTk.PhotoImage(img_coin)
                     self.canvas.create_image(x + cell_size // 2, y + cell_size // 2, anchor=tk.CENTER, image=self.img_coin_id)
-                    
+        #self.canvas.tag_lower("rounded_rect")           
         self.canvas.update()
+
+
+    def update_depth_slider(self, new_depth):
+        self.current_depth = int(new_depth)  # Convert new_depth to an integer
+        if game_manager is not None:
+            game_manager.game.submarine_position = (self.current_depth, 0, 0)
+            self.update_game_display(game_manager, "right")
+            self.update_oxygen_label(game_manager.game.submarine_oxygen)
+
 
     def load_submarine_images(self):
         img_left = Image.open("Edusoft_2\\left_sub.png")
