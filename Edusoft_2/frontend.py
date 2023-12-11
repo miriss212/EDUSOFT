@@ -252,4 +252,4 @@ class WindowEditor:
         canvas_height = self.canvas.winfo_reqheight()
 
         self.canvas.create_rectangle(canvas_width // 2 - 100, canvas_height - 35, canvas_width // 2 + 100, canvas_height - 15, fill="white", outline="black")
-        self.canvas.create_text(canvas_width // 2, canvas_height - 25, text = f"Zostavajúci vzduch: {submarine_oxygen}", anchor=tk.CENTER, font = WindowEditor.FONT)
+        self.canvas.create_text(canvas_width // 2, canvas_height - 25, text = f"Zostavajúci vzduch: {submarine_oxygen}", anchor=tk.CENTER, font = WindowEditor.FONT, fill="black")
