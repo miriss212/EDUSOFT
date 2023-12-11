@@ -51,7 +51,7 @@ class WindowEditor:
         self.restart_game_button.grid(row=0, column=3)
 
     def set_new_game_button(self, new_game_function: callable) -> None:
-        self.new_game_button = tk.Button(self.buttons_area, text = "Nová hra...", font = WindowEditor.FONT, command = new_game_function)
+        self.new_game_button = tk.Button(self.buttons_area, text = "Nová hra", font = WindowEditor.FONT, command = new_game_function)
         self.new_game_button.grid(row=0, column=4)
 
     def set_sonar_slider(self, from_: int, to: int, sonar_slider_function: callable) -> None:
@@ -251,5 +251,5 @@ class WindowEditor:
         canvas_width = self.canvas.winfo_reqwidth()
         canvas_height = self.canvas.winfo_reqheight()
 
-        self.canvas.create_rectangle(canvas_width // 2 - 75, canvas_height - 35, canvas_width // 2 + 75, canvas_height - 15, fill="white", outline="black")
+        self.canvas.create_rectangle(canvas_width // 2 - 100, canvas_height - 35, canvas_width // 2 + 100, canvas_height - 15, fill="white", outline="black")
         self.canvas.create_text(canvas_width // 2, canvas_height - 25, text = f"Zostavajúci vzduch: {submarine_oxygen}", anchor=tk.CENTER, font = WindowEditor.FONT)
