@@ -136,5 +136,5 @@ class GameManager:
         self.window_editor.master.unbind("<BackSpace>")
 
 map_editor = WindowEditor()
-game = Game("maps/test_map.txt")
+game = Game("maps/mapa_1.txt")
 game_manager = GameManager(map_editor, game)
